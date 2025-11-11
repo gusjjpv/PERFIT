@@ -1,0 +1,48 @@
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
+
+# Ambientes Virtuais (MUITO IMPORTANTE)
+.venv/
+venv/
+env/
+ENV/
+
+# Python (Bytecode, Cache e Eggs)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+pip-cache/
+
+# Django (Arquivos gerados e de desenvolvimento)
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+*.log
+logs/
+
+# Segredos e Configurações Locais
+# NUNCA envie seus segredos para o Git!
+.env
+*.env
+local_settings.py
+*.local
+
+# Testes e Cobertura de Código
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# Arquivos de IDE e Editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
