@@ -28,6 +28,7 @@ media/
 staticfiles/
 *.log
 logs/
+PERFIT/academia/migrations/
 
 # Segredos e Configurações Locais
 # NUNCA envie seus segredos para o Git!

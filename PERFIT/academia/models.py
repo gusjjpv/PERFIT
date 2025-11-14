@@ -11,8 +11,10 @@ class Professor(models.Model):
 class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
+    professor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Professor Responsavel", related_name="meus_alunos")
+
     def __str__(self):
-        return self.user.first_name
+        return self.user.first_name or self.user.username
 
 
 class FichaDeDados(models.Model):
@@ -42,7 +44,7 @@ class FichaDeDados(models.Model):
 
 class AvaliacaoFisica(models.Model):
     
-    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, primary_key=True, verbose_name= "Aluno", related_name='Avaliacoes')
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, verbose_name="Aluno", related_name='AvaliacoesFisicas')
 
     data = models.DateTimeField(verbose_name="Data da avaliação", auto_now_add=True)
     peito = models.DecimalField("Peito (cm)", max_digits=5, decimal_places=2, blank=False)
@@ -67,4 +69,29 @@ class AvaliacaoFisica(models.Model):
             return f"Avaliação de {self.aluno.user.first_name} em {self.data.strftime('%d/%m/%Y')}"
         except:
             return f"Avaliação em {self.data.strftime('%d/%m/%Y')}"
+
+class MomentoChoices(models.TextChoices):
+    ANTES = 'ANTES', 'Antes do Treino'
+    DURANTE = 'DURANTE', 'Durante o Treino'
+    DEPOIS = 'DEPOIS', 'Depois do Treino'
+
+class AvaliacaoPa(models.Model):
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, primary_key=True, verbose_name ="Aluno", related_name='avaliacoes_pa')
+
+    data = models.DateTimeField(verbose_name='Data da avaliação', auto_now_add=True)
+    paSistolica = models.IntegerField("PA Sistolica")
+    paDiastolica = models.IntegerField("PA Diastolica")
+    momento = models.CharField(max_length=10, choices=MomentoChoices.choices)
+
+    class Meta:
+        verbose_name = "Avaliação de PA"
+        verbose_name_plural = "Avaliações de PA"
+        ordering = ['-data']
+
+    def __str__(self):
+        try:
+            return f"PA de {self.aluno.user.first_name} em {self.data.strftime('%d/%m/%Y')}"
+        except:
+            return "Avaliação de PA"
+
 
