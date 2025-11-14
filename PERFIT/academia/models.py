@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class Professor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    ## era bom ter o cref do professor
+    cref = models.CharField(max_length=20, unique=True, null=True, blank=True, verbose_name="CREF")
     def __str__(self):
         return self.user.first_name
 
@@ -76,7 +76,7 @@ class MomentoChoices(models.TextChoices):
     DEPOIS = 'DEPOIS', 'Depois do Treino'
 
 class AvaliacaoPa(models.Model):
-    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, primary_key=True, verbose_name ="Aluno", related_name='avaliacoes_pa')
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, verbose_name ="Aluno", related_name='avaliacoes_pa')
 
     data = models.DateTimeField(verbose_name='Data da avaliação', auto_now_add=True)
     paSistolica = models.IntegerField("PA Sistolica")
