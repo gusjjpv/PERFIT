@@ -28,7 +28,7 @@ media/
 staticfiles/
 *.log
 logs/
-PERFIT/academia/migrations/
+# PERFIT/academia/migrations/  # REMOVIDO: migrations devem ser versionadas!
 
 # Segredos e Configurações Locais
 # NUNCA envie seus segredos para o Git!
