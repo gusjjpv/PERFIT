@@ -1,8 +1,8 @@
-
+import Login from "./components/organisms/Login"
 
 function App() {
   return (
-    <>Teste</>
+    <Login />
   )
 }
 
