@@ -12,6 +12,7 @@ class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     professor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Professor Responsavel", related_name="meus_alunos")
+    ativo = models.BooleanField(default=True, verbose_name="Ativo")
 
     def __str__(self):
         return self.user.first_name or self.user.username
@@ -20,8 +21,8 @@ class Aluno(models.Model):
 class FichaDeDados(models.Model):
     aluno = models.OneToOneField(Aluno, on_delete=models.CASCADE, primary_key=True, verbose_name= "Aluno", related_name='fichadedados')
 
-    peso = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Peso (Kg)")
-    altura = models.DecimalField(max_digits=3, decimal_places=2, verbose_name="Altura (m)")
+    peso = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Peso (Kg)", null=True, blank=True)
+    altura = models.DecimalField(max_digits=3, decimal_places=2, verbose_name="Altura (m)", null=True, blank=True)
     imc = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="IMC", null=True, blank=True)
     objetivo = models.CharField(max_length=255, blank=True)
     profissao = models.CharField(max_length=50, blank=True)
