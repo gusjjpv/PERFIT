@@ -21,12 +21,24 @@ class Aluno(models.Model):
 class FichaDeDados(models.Model):
     aluno = models.OneToOneField(Aluno, on_delete=models.CASCADE, primary_key=True, verbose_name= "Aluno", related_name='fichadedados')
 
+    data_nascimento = models.DateField(verbose_name="Data de Nascimento", null=True, blank=True)
     peso = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Peso (Kg)", null=True, blank=True)
     altura = models.DecimalField(max_digits=3, decimal_places=2, verbose_name="Altura (m)", null=True, blank=True)
     imc = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="IMC", null=True, blank=True)
     objetivo = models.CharField(max_length=255, blank=True)
     profissao = models.CharField(max_length=50, blank=True)
     problema_saude = models.CharField(max_length=255, blank=True)
+    
+    @property
+    def idade(self):
+        """Calcula a idade com base na data de nascimento"""
+        if not self.data_nascimento:
+            return None
+        from datetime import date
+        hoje = date.today()
+        return hoje.year - self.data_nascimento.year - (
+            (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day)
+        )
 
     def save(self, *args, **kwargs):
         if self.peso and self.altura and self.altura > 0:

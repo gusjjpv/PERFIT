@@ -96,17 +96,19 @@ class AlunoCreateSerializer(serializers.ModelSerializer):
 
 class FichaDeDadosSerializer(serializers.ModelSerializer):
     imc = serializers.DecimalField(max_digits=5, decimal_places=2, read_only=True)
+    idade = serializers.IntegerField(read_only=True)
+    nome = serializers.CharField(source='aluno.user.first_name', read_only=True)
     
     class Meta:
         model = FichaDeDados
-        fields = ('peso', 'altura', 'imc', 'objetivo', 'profissao', 'problema_saude')
+        fields = ('nome', 'data_nascimento', 'idade', 'peso', 'altura', 'imc', 'objetivo', 'profissao', 'problema_saude')
         
     def validate_altura(self, value):
-        if value <= 0:
+        if value is not None and value <= 0:
             raise serializers.ValidationError("Altura deve ser maior que zero.")
         return value
     
     def validate_peso(self, value):
-        if value <= 0:
+        if value is not None and value <= 0:
             raise serializers.ValidationError("Peso deve ser maior que zero.")
         return value
