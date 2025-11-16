@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Professor, Aluno
+from .models import Professor, Aluno, FichaDeDados
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -92,3 +92,21 @@ class AlunoCreateSerializer(serializers.ModelSerializer):
         
         aluno = Aluno.objects.create(user=user, professor=professor_logado, **validated_data)
         return aluno
+
+
+class FichaDeDadosSerializer(serializers.ModelSerializer):
+    imc = serializers.DecimalField(max_digits=5, decimal_places=2, read_only=True)
+    
+    class Meta:
+        model = FichaDeDados
+        fields = ('peso', 'altura', 'imc', 'objetivo', 'profissao', 'problema_saude')
+        
+    def validate_altura(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Altura deve ser maior que zero.")
+        return value
+    
+    def validate_peso(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Peso deve ser maior que zero.")
+        return value

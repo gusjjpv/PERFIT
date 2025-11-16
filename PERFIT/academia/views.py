@@ -1,8 +1,10 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.filters import SearchFilter, OrderingFilter
-from .models import Professor, Aluno
-from .serializers import ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer
+from rest_framework.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
+from .models import Professor, Aluno, FichaDeDados
+from .serializers import ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, FichaDeDadosSerializer
 from .permissions import IsProfessor
 
 class ProfessoresAPIView(generics.ListCreateAPIView):
@@ -48,4 +50,26 @@ class AlunoAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Aluno.objects.all()
     serializer_class = AlunoSerializer
     permission_classes = [IsAuthenticated]
+
+
+class FichaDeDadosAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = FichaDeDadosSerializer
+    permission_classes = [IsAuthenticated, IsProfessor]
+    
+    def get_object(self):
+        aluno_id = self.kwargs.get('aluno_id')
+        aluno = get_object_or_404(Aluno, pk=aluno_id)
+        
+        # Verifica se o professor logado é dono do aluno
+        if aluno.professor != self.request.user.professor:
+            raise PermissionDenied("Você não tem permissão para acessar a ficha deste aluno.")
+        
+        # Retorna a ficha existente ou cria uma nova
+        ficha, created = FichaDeDados.objects.get_or_create(aluno=aluno)
+        return ficha
+    
+    def perform_destroy(self, instance):
+        # Soft delete: marca aluno como inativo ao invés de deletar a ficha
+        instance.aluno.ativo = False
+        instance.aluno.save()
 
