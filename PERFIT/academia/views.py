@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.filters import SearchFilter, OrderingFilter
 from .models import Professor, Aluno
 from .serializers import ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer
 from .permissions import IsProfessor
@@ -28,6 +29,10 @@ class ProfessorAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class AlunosAPIView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsProfessor]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['user__first_name', 'user__last_name', 'user__username']
+    ordering_fields = ['user__first_name', 'user__last_name']
+    ordering = ['user__first_name']  # Ordenação padrão por nome
 
     def get_queryset(self):
         # Retorna apenas os alunos do professor logado
