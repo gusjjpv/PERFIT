@@ -27,8 +27,11 @@ class ProfessorAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class AlunosAPIView(generics.ListCreateAPIView):
-    queryset = Aluno.objects.all()
     permission_classes = [IsAuthenticated, IsProfessor]
+
+    def get_queryset(self):
+        # Retorna apenas os alunos do professor logado
+        return Aluno.objects.filter(professor=self.request.user.professor)
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
