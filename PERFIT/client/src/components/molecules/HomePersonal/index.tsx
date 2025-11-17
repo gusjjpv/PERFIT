@@ -40,13 +40,15 @@ const WrapperTitle = styled.div`
 const WrapperStudents = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    height: 305px;
     width: 100%;
     gap: 1rem;
+    max-height: 380px; 
     overflow-y: scroll;
     margin-top: 3rem;
+    margin-bottom: 2rem; 
+    padding-bottom: 1rem; 
 `
 
 const ContainerStudents = styled.div`
@@ -60,6 +62,7 @@ const ContainerStudents = styled.div`
     border: 1px solid #00000030;
     border-radius: 8px;
     box-shadow: 0px 0px 1px 1px #00000030;
+    cursor: pointer;
 `
 
 const ImageWrapper = styled.div`
@@ -99,11 +102,10 @@ export default function HomePersonal({ students } : HomePersonalProps) {
         <Input type="text" placeholder="Pesquise pelo nome" width={90} icon={<IoSearchSharp />} />
 
         <WrapperStudents>
-            {students.map(( item ) => (
-                <ContainerStudents>
-
+            {students.map(( item, index ) => (
+                <ContainerStudents key={index}>
                     <ImageWrapper>
-                        <img loading="lazy" src={item.image} alt="logo" />
+                        <img loading="lazy" src={item.image} alt={item.name} />
                     </ImageWrapper>
                     
                     <WrapperName>{item.name}</WrapperName>

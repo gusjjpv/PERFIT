@@ -4,7 +4,7 @@ import Footer from "../Footer";
 
 const Container = styled.div`
   position: absolute;
-  height: 500px;
+  height: 650px;
   width: 95%;
   top: 50%;
   left: 50%;
