@@ -42,7 +42,6 @@ const IconWrapper = styled.span`
 export default function Input({ type, placeholder, width, icon } : InputProps) {
   return (
     <InputWrapper $width={width} >
-      
       <IconWrapper>
         {icon}
       </IconWrapper>

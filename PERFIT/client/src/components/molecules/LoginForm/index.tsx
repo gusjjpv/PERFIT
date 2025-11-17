@@ -13,7 +13,6 @@ interface LoginFormProps {
   }[]
 }
 
-
 const Container = styled.form`
   display: flex;
   flex-direction: column;
@@ -66,7 +65,7 @@ export default function LoginForm({ input } : LoginFormProps) {
   return (
     <Container>
       <LogoContainer>
-        <img src="/logo.png" alt="Logo" />
+        <img loading='lazy' src="/logo.png" alt="Logo" />
       </LogoContainer>
         
       <h3>Faça login e comece a usar! </h3> 
