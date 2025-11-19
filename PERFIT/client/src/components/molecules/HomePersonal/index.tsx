@@ -2,6 +2,9 @@ import styled from "styled-components"
 import { IoPeople } from "react-icons/io5";
 import Input from "../../atoms/Input";
 import { IoSearchSharp } from "react-icons/io5";
+import { useContext, useEffect } from "react";
+import { LoadingContext } from "../../../context/LoadingContext";
+import Loading from "../../../animation/loading";
 
 interface HomePersonalProps {
     students: {
@@ -37,6 +40,7 @@ const WrapperTitle = styled.div`
     }
 `
 
+// Estilos corrigidos
 const WrapperStudents = styled.div`
     display: flex;
     flex-direction: column;
@@ -44,7 +48,15 @@ const WrapperStudents = styled.div`
     align-items: center;
     width: 100%;
     gap: 1rem;
-    max-height: 380px; 
+    
+    // --- CORREÇÃO AQUI ---
+    // 100vh = 100% da altura da tela (viewport)
+    // 250px é uma estimativa da altura combinada do título, barra de pesquisa e margens.
+    max-height: calc(100vh - 260px); 
+    // Se o seu componente for maior que o viewport (ex: está dentro de um layout com footer/header),
+    // você pode usar 100% (da altura do pai) em vez de 100vh, mas 100vh é mais robusto.
+    // ---------------------
+    
     overflow-y: scroll;
     margin-top: 3rem;
     margin-bottom: 2rem; 
@@ -92,6 +104,17 @@ const WrapperName = styled.p`
 `
 
 export default function HomePersonal({ students } : HomePersonalProps) {
+    const { loading, setLoading } = useContext(LoadingContext)
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false)
+        }, 2000)
+
+        return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
   return (
     <Container>
         <WrapperTitle>
@@ -100,19 +123,24 @@ export default function HomePersonal({ students } : HomePersonalProps) {
         </WrapperTitle>
 
         <Input type="text" placeholder="Pesquise pelo nome" width={90} icon={<IoSearchSharp />} />
-
-        <WrapperStudents>
-            {students.map(( item, index ) => (
-                <ContainerStudents key={index}>
-                    <ImageWrapper>
-                        <img loading="lazy" src={item.image} alt={item.name} />
-                    </ImageWrapper>
-                    
-                    <WrapperName>{item.name}</WrapperName>
-                    
-                </ContainerStudents>
-            ))}
-        </WrapperStudents>
+        {loading ? (
+            <Loading />
+        ) : (
+            <>
+                <WrapperStudents>
+                    {students.map(( item, index ) => (
+                        <ContainerStudents key={index}>
+                            <ImageWrapper>
+                                <img loading="lazy" src={item.image} alt={item.name} />
+                            </ImageWrapper>
+                            
+                            <WrapperName>{item.name}</WrapperName>
+                            
+                        </ContainerStudents>
+                    ))}
+                </WrapperStudents>
+            </>
+        )}
 
     </Container>
   )

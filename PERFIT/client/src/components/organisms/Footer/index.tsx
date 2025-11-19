@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { MdHome } from "react-icons/md";
 import { FaPlusCircle } from "react-icons/fa";
 import { GiWeightLiftingUp } from "react-icons/gi";
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
     display: flex;
@@ -12,7 +13,7 @@ const Container = styled.div`
     gap: 2rem;
     width: 100%;
     background-color: white;
-    border: 1px solid black;
+    border: 1px solid #00000029;
     border-radius: 5px;
     padding: .6rem;
     z-index: 999;
@@ -29,16 +30,23 @@ const Container = styled.div`
             height: 34px;
             width: 34px;
         }
+
+        li {
+            color: #333333;
+            font-weight: 600;
+        }
     }
 `
 
 export default function Footer() {
   return (
     <Container>
-        <ul>
-            <MdHome />
-            <li>Início</li>
-        </ul>
+        <Link to='/personal'>
+            <ul>
+                <MdHome />
+                <li>Início</li>
+            </ul>
+        </Link>
 
         <ul>
             <FaPlusCircle />

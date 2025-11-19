@@ -78,11 +78,10 @@ export default function LoginForm({ input } : LoginFormProps) {
               <Input type={item.type} placeholder={item.placeholder} icon={item.icon} />
             </ContainerInput>
           </>
-
         ))}
       </ContainerForm>
 
-      <Button width='15rem'>Entrar</Button>
+      <Button width='15rem' gradient={true}>Entrar</Button>
 
     </Container>
   )

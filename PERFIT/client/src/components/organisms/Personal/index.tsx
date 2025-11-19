@@ -4,7 +4,8 @@ import Footer from "../Footer";
 
 const Container = styled.div`
   position: absolute;
-  height: 650px;
+  //height: 650px;
+  height: 95%;
   width: 95%;
   top: 50%;
   left: 50%;
@@ -22,6 +23,15 @@ const Container = styled.div`
 export default function Personal() {
 
   const students = [
+    {image: '/logo.png', name: 'Fulano'},
+    {image: '/logo.png', name: 'Fulano'},
+    {image: '/logo.png', name: 'Fulano'},
+    {image: '/logo.png', name: 'Fulano'},
+    {image: '/logo.png', name: 'Fulano'},
+    {image: '/logo.png', name: 'Fulano'},
+    {image: '/logo.png', name: 'Fulano'},
+    {image: '/logo.png', name: 'Fulano'},
+    {image: '/logo.png', name: 'Fulano'},
     {image: '/logo.png', name: 'Fulano'},
     {image: '/logo.png', name: 'Fulano'},
     {image: '/logo.png', name: 'Fulano'},
