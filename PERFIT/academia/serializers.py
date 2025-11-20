@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Professor, Aluno
-
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -92,3 +92,21 @@ class AlunoCreateSerializer(serializers.ModelSerializer):
         
         aluno = Aluno.objects.create(user=user, professor=professor_logado, **validated_data)
         return aluno
+    
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        data['user_id'] = self.user.id
+        data['username'] = self.user.username
+        data['first_name'] = self.user.first_name
+        
+        if hasattr(self.user, 'professor'):
+            data['role'] = 'professor'
+        elif hasattr(self.user, 'aluno'):
+            data['role'] = 'aluno'
+        else:
+            data['role'] = 'admin'
+
+        return data

@@ -3,6 +3,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Professor, Aluno
 from .serializers import ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer
 from .permissions import IsProfessor
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import MyTokenObtainPairSerializer
 
 class ProfessoresAPIView(generics.ListCreateAPIView):
     queryset = Professor.objects.all()
@@ -41,3 +43,6 @@ class AlunoAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AlunoSerializer
     permission_classes = [IsAuthenticated]
 
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
