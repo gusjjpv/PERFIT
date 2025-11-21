@@ -170,7 +170,7 @@ export default function Student() {
                 <TextContent>
                   <h2>Fulano</h2>
                   {isEdit ? (
-                    <Input type="textarea" placeholder="Tenho como objetivo emagrecer Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque nobis amet modi quasi accusantium perferendis blanditiis quod. Tempore odit, fuga sed nisi laudantium nulla, quae, labore expedita in nesciunt blanditiis!" disabled={!isEdit} padding="0.5rem 0.5rem 3rem .5rem" isTextarea="textarea" onChange={(e) => setGoal(e.target.value)} />
+                    <Input id="0" type="textarea" placeholder="Tenho como objetivo emagrecer Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque nobis amet modi quasi accusantium perferendis blanditiis quod. Tempore odit, fuga sed nisi laudantium nulla, quae, labore expedita in nesciunt blanditiis!" disabled={!isEdit} padding="0.5rem 0.5rem 3rem .5rem" isTextarea="textarea" onChange={(e) => setGoal(e.target.value)} />
                   ) : (
                     <p>Tenho como objetivo emagrecer Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque nobis amet modi quasi accusantium perferendis blanditiis quod. Tempore odit, fuga sed nisi laudantium nulla, quae, labore expedita in nesciunt blanditiis!</p>
                   )}

@@ -2,12 +2,16 @@ from pathlib import Path
 from corsheaders.defaults import default_headers
 import environ
 
+# 1. Definir o caminho base (BASE_DIR)
+# O BASE_DIR aponta para o diretório PERFIT/PERFIT (onde manage.py está)
+BASE_DIR = Path(__file__).resolve().parent.parent 
+
+# 2. Inicializar o objeto Env
 env = environ.Env()
-environ.Env.read_env()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+# 3. Ler o arquivo .env explicitamente no caminho correto
+# O arquivo .env está em BASE_DIR / '.env'
+env.read_env(BASE_DIR / '.env') 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/

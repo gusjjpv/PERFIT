@@ -3,6 +3,9 @@ import { MdHome } from "react-icons/md";
 import { FaPlusCircle } from "react-icons/fa";
 import { GiWeightLiftingUp } from "react-icons/gi";
 import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import CreateStudent from '../../molecules/CreateStudent';
+import { ModalContext } from '../../../context/ModalContext';
 
 const Container = styled.div`
     display: flex;
@@ -39,24 +42,36 @@ const Container = styled.div`
 `
 
 export default function Footer() {
+    const { isModal, setIsModal } = useContext(ModalContext)
+
+    const openModal = () => {
+        setIsModal(true)
+    }
+ 
   return (
-    <Container>
-        <Link to='/personal'>
-            <ul>
-                <MdHome />
-                <li>Início</li>
+    <>
+        <Container>
+            <Link to='/personal'>
+                <ul>
+                    <MdHome />
+                    <li>Início</li>
+                </ul>
+            </Link>
+
+            <ul onClick={openModal}>
+                <FaPlusCircle />
+                <li>Novo aluno(a)</li>
             </ul>
-        </Link>
 
-        <ul>
-            <FaPlusCircle />
-            <li>Novo aluno(a)</li>
-        </ul>
+            <ul>
+                <GiWeightLiftingUp />
+                <li>Treinos</li>
+            </ul>
+        </Container>
 
-        <ul>
-            <GiWeightLiftingUp />
-            <li>Treinos</li>
-        </ul>
-    </Container>
+        {isModal && (
+            <CreateStudent />
+        )}
+    </>
   )
 }

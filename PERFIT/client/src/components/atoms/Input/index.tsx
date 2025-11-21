@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import styled from 'styled-components'
 
 interface InputProps {
+  id: string,
   type: string,
   placeholder: string,
   width?: number,
@@ -10,6 +11,7 @@ interface InputProps {
   padding?: string,
   isTextarea?: string,
   variant?: string,
+  variantPlaceholder?: string,
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void 
 }
 
@@ -17,7 +19,8 @@ interface InputStyles {
   $width?: number,
   $disabled?: boolean,
   $padding?: string,
-  $variant?: string
+  $variant?: string,
+  $variantPlaceholder?: string
 }
 
 const InputWrapper = styled.div<InputStyles>`
@@ -32,6 +35,25 @@ const InputWrapper = styled.div<InputStyles>`
 
 const StyledInput = styled.input<InputStyles>`
   background-color: ${({ theme, $disabled }) => $disabled ? theme.colors.primary.orange : theme.colors.primary.white};
+  &::placeholder {
+    color: ${({ theme, $variantPlaceholder }) => {
+      if ($variantPlaceholder) {
+        switch ($variantPlaceholder) {
+          case "primary":
+            return theme.colors.primary.white;
+          case "secondary":
+            return theme.colors.primary.orange;
+          case "tertiary":
+            // ... (sua lógica)
+            return theme.colors.primary.orange;
+          default:
+            return theme.colors.primary.gray;
+        }
+      }
+      return theme.colors.primary.gray;
+    }};
+    opacity: 1;
+  }
   width: 100%; 
   border: none; 
   outline: none;
@@ -63,7 +85,7 @@ const IconWrapper = styled.span<InputStyles>`
   font-size: 1rem;
 `
 
-export default function Input({ type, placeholder, width, icon, disabled, padding, isTextarea, variant, onChange } : InputProps) {
+export default function Input({ id, type, placeholder, width, icon, disabled, padding, isTextarea, variant, variantPlaceholder, onChange } : InputProps) {
   return (
     <InputWrapper $width={width} $disabled={disabled} $padding={padding} >
       {icon && (
@@ -73,11 +95,13 @@ export default function Input({ type, placeholder, width, icon, disabled, paddin
       )}
 
       <StyledInput 
+        id={id}
         as={isTextarea}
         type={type}
         placeholder={placeholder}
         disabled={disabled}
         $padding={padding}
+        $variantPlaceholder={variantPlaceholder}
         onChange={onChange}
       />
     </InputWrapper>
