@@ -95,3 +95,74 @@ class AvaliacaoPa(models.Model):
             return "Avaliação de PA"
 
 
+class DiaSemana(models.TextChoices):
+        SEGUNDA = 'SEG', 'Segunda-feira'
+        TERCA = 'TER', 'Terça-feira'
+        QUARTA = 'QUA', 'Quarta-feira'
+        QUINTA = 'QUI', 'Quinta-feira'
+        SEXTA = 'SEX', 'Sexta-feira'
+        SABADO = 'SAB', 'Sábado'
+        DOMINGO = 'DOM', 'Domingo'
+        INDEFINIDO = 'IND', 'Sem dia fixo (Rotativo)'
+
+
+class FichaTreino(models.Model):
+    aluno = models.ForeignKey(
+        Aluno, on_delete=models.CASCADE,
+        related_name='fichas_de_treino',
+        verbose_name="Aluno"
+    )
+
+    nome = models.CharField("Nome da Ficha", max_length=100)
+    data_inicio = models.DateField("Data de Início", auto_now_add=True)
+    data_fim = models.DateField("Data de Término", null=True, blank=True)
+    ativa = models.BooleanField("Ficha Ativa?", default=True)
+    observacoes = models.TextField("Observações Gerais", blank=True)
+
+    def __str__(self):
+        return f"{self.nome} - {self.aluno.user.first_name}"
+
+
+class Treino(models.Model):
+    ficha = models.ForeignKey(
+        FichaTreino, 
+        on_delete=models.CASCADE, 
+        related_name='treinos',
+        verbose_name="Ficha"
+    )
+
+    dia_semana = models.CharField(
+        "Dia da Semana",
+        max_length=3,
+        choices=DiaSemana.choices,
+        default=DiaSemana.INDEFINIDO,
+        blank=True
+    )
+
+    titulo = models.CharField("Título do Treino", max_length=50)
+    descricao = models.CharField("Descrição/Foco", max_length=100, blank=True)
+    ordem = models.PositiveIntegerField("Ordem", default=1)
+
+    class Meta:
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"{self.titulo} - {self.ficha.nome}"
+
+
+class Exercicio(models.Model):
+    treino = models.ForeignKey(
+        Treino, 
+        on_delete=models.CASCADE, 
+        related_name='exercicios',
+        verbose_name="Treino"
+    )
+
+    nome = models.CharField("Nome do Exercício", max_length=100) 
+    series = models.PositiveIntegerField("Séries")
+    repeticoes = models.CharField("Repetições", max_length=20)
+    descanso = models.CharField("Tempo de Descanso", max_length=20, blank=True)
+    observacao = models.TextField("Observação Técnica", blank=True)
+
+    def __str__(self):
+        return self.nome
