@@ -4,11 +4,11 @@ import environ
 
 # 1. Definir o caminho base (BASE_DIR)
 # O BASE_DIR aponta para o diretório PERFIT/PERFIT (onde manage.py está)
-BASE_DIR = Path(__file__).resolve().parent.parent 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 2. Inicializar o objeto Env
 env = environ.Env()
-
+environ.Env.read_env()
 # 3. Ler o arquivo .env explicitamente no caminho correto
 # O arquivo .env está em BASE_DIR / '.env'
 env.read_env(BASE_DIR / '.env') 
