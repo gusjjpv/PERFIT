@@ -11,4 +11,9 @@ export const GlobalStyles = createGlobalStyle`
         background-image: url(/bg.png);
         background-size: fill;
     }
+
+    a {
+        text-decoration: none;
+        color: unset;
+    }
 `

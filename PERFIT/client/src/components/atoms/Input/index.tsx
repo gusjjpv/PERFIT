@@ -2,14 +2,25 @@ import type { ReactNode } from 'react'
 import styled from 'styled-components'
 
 interface InputProps {
+  id: string,
   type: string,
   placeholder: string,
-  width?: number
-  icon?: ReactNode
+  width?: number,
+  icon?: ReactNode,
+  disabled?: boolean,
+  padding?: string,
+  isTextarea?: string,
+  variant?: string,
+  variantPlaceholder?: string,
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void 
 }
 
 interface InputStyles {
-  $width?: number
+  $width?: number,
+  $disabled?: boolean,
+  $padding?: string,
+  $variant?: string,
+  $variantPlaceholder?: string
 }
 
 const InputWrapper = styled.div<InputStyles>`
@@ -22,34 +33,76 @@ const InputWrapper = styled.div<InputStyles>`
   align-items: center;
 `
 
-const StyledInput = styled.input`
+const StyledInput = styled.input<InputStyles>`
+  background-color: ${({ theme, $disabled }) => $disabled ? theme.colors.primary.orange : theme.colors.primary.white};
+  &::placeholder {
+    color: ${({ theme, $variantPlaceholder }) => {
+      if ($variantPlaceholder) {
+        switch ($variantPlaceholder) {
+          case "primary":
+            return theme.colors.primary.white;
+          case "secondary":
+            return theme.colors.primary.orange;
+          case "tertiary":
+            // ... (sua lógica)
+            return theme.colors.primary.orange;
+          default:
+            return theme.colors.primary.gray;
+        }
+      }
+      return theme.colors.primary.gray;
+    }};
+    opacity: 1;
+  }
   width: 100%; 
   border: none; 
   outline: none;
-  padding: .4rem .4rem .4rem 2rem; 
+  padding: ${({ $padding }) => $padding ? `${$padding}` : '.4rem .4rem .4rem 2rem'};
 `
 
-const IconWrapper = styled.span`
+const IconWrapper = styled.span<InputStyles>`
   position: absolute;
   left: 0.5rem; 
   top: 55%; 
   transform: translateY(-50%);
-  color: #00000070; 
+  color: ${({ theme, $variant, $disabled }) => {
+    if ($variant) {
+      switch ($variant) {
+        case "primary":
+          return theme.colors.primary.white;
+        case "secondary":
+          return theme.colors.primary.orange;
+        case "tertiary":
+          return $disabled ? theme.colors.primary.gray : theme.colors.primary.orange;
+        default:
+          return theme.colors.primary.gray;
+      }
+    }
+
+    return theme.colors.primary.gray;
+  }};
   pointer-events: none; 
   font-size: 1rem;
 `
 
-export default function Input({ type, placeholder, width, icon } : InputProps) {
+export default function Input({ id, type, placeholder, width, icon, disabled, padding, isTextarea, variant, variantPlaceholder, onChange } : InputProps) {
   return (
-    <InputWrapper $width={width} >
-      
-      <IconWrapper>
-        {icon}
-      </IconWrapper>
+    <InputWrapper $width={width} $disabled={disabled} $padding={padding} >
+      {icon && (
+        <IconWrapper $disabled={disabled} $variant={variant}>
+          {icon}
+        </IconWrapper>
+      )}
 
       <StyledInput 
+        id={id}
+        as={isTextarea}
         type={type}
         placeholder={placeholder}
+        disabled={disabled}
+        $padding={padding}
+        $variantPlaceholder={variantPlaceholder}
+        onChange={onChange}
       />
     </InputWrapper>
   )
