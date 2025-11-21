@@ -135,6 +135,19 @@ class FichaTreinoSerializer(serializers.ModelSerializer):
         model = FichaTreino
         fields = ['id', 'aluno', 'nome', 'data_inicio', 'data_fim', 'ativa', 'observacoes', 'treinos']
 
+    def validate_aluno(self, value):
+        #Impede que o professor crie ficha para um aluno que não é dele.
+       
+        user = self.context['request'].user
+        
+        if user.is_superuser:
+            return value
+        
+        if value.professor.user != user:
+             raise serializers.ValidationError("Você não tem permissão para criar fichas para este aluno.")
+        
+        return value
+
     def create(self, validated_data):
         treinos_data = validated_data.pop('treinos')
 
