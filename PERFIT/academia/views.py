@@ -75,14 +75,24 @@ class ProfessorAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class AlunosAPIView(generics.ListCreateAPIView):
-    queryset = Aluno.objects.all()
     permission_classes = [IsAuthenticated, IsProfessor]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return AlunoCreateSerializer
         return AlunoSerializer
-    
+
+    def get_queryset(self):
+        user = self.request.user
+        
+        if user.is_superuser:
+            return Aluno.objects.all()
+
+        if hasattr(user, 'professor'):
+            return Aluno.objects.filter(professor=user.professor)
+
+        return Aluno.objects.none()
+
     #sobrescrevendo os metodos para documentacao no swagger
 
     @extend_schema(
