@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Professor, Aluno
+from .models import Professor, Aluno, FichaTreino, Treino, Exercicio
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -109,4 +109,43 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         else:
             data['role'] = 'admin'
 
-        return data
+        return data  
+
+
+class ExercicioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exercicio
+        fields = ['id', 'nome', 'series', 'repeticoes', 'descanso', 'observacao']
+
+
+class TreinoSerializer(serializers.ModelSerializer):
+    # Um treino tem vários exercícios
+    exercicios = ExercicioSerializer(many=True) 
+
+    class Meta:
+        model = Treino
+        fields = ['id', 'dia_semana','titulo', 'descricao', 'ordem', 'exercicios']
+
+
+class FichaTreinoSerializer(serializers.ModelSerializer):
+    # Uma ficha tem vários treinos
+    treinos = TreinoSerializer(many=True)
+
+    class Meta:
+        model = FichaTreino
+        fields = ['id', 'aluno', 'nome', 'data_inicio', 'data_fim', 'ativa', 'observacoes', 'treinos']
+
+    def create(self, validated_data):
+        treinos_data = validated_data.pop('treinos')
+
+        ficha = FichaTreino.objects.create(**validated_data)
+        
+        for treino_data in treinos_data:
+            exercicios_data = treino_data.pop('exercicios')
+            
+            treino = Treino.objects.create(ficha=ficha, **treino_data)
+            
+            for exercicio_data in exercicios_data:
+                Exercicio.objects.create(treino=treino, **exercicio_data)
+        
+        return ficha

@@ -95,6 +95,17 @@ class AvaliacaoPa(models.Model):
             return "Avaliação de PA"
 
 
+class DiaSemana(models.TextChoices):
+        SEGUNDA = 'SEG', 'Segunda-feira'
+        TERCA = 'TER', 'Terça-feira'
+        QUARTA = 'QUA', 'Quarta-feira'
+        QUINTA = 'QUI', 'Quinta-feira'
+        SEXTA = 'SEX', 'Sexta-feira'
+        SABADO = 'SAB', 'Sábado'
+        DOMINGO = 'DOM', 'Domingo'
+        INDEFINIDO = 'IND', 'Sem dia fixo (Rotativo)'
+
+
 class FichaTreino(models.Model):
     aluno = models.ForeignKey(
         Aluno, on_delete=models.CASCADE,
@@ -120,6 +131,14 @@ class Treino(models.Model):
         verbose_name="Ficha"
     )
 
+    dia_semana = models.CharField(
+        "Dia da Semana",
+        max_length=3,
+        choices=DiaSemana.choices,
+        default=DiaSemana.INDEFINIDO,
+        blank=True
+    )
+
     titulo = models.CharField("Título do Treino", max_length=50)
     descricao = models.CharField("Descrição/Foco", max_length=100, blank=True)
     ordem = models.PositiveIntegerField("Ordem", default=1)
@@ -135,7 +154,7 @@ class Exercicio(models.Model):
     treino = models.ForeignKey(
         Treino, 
         on_delete=models.CASCADE, 
-        related_name='exercicios', # Atalho: treino.exercicios.all()
+        related_name='exercicios',
         verbose_name="Treino"
     )
 

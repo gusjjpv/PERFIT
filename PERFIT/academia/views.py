@@ -1,11 +1,11 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .models import Professor, Aluno
-from .serializers import ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer
 from .permissions import IsProfessor
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer
 from drf_spectacular.utils import extend_schema, OpenApiResponse
+from .models import Professor, Aluno, FichaTreino
+from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, FichaTreinoSerializer)
 
 class ProfessoresAPIView(generics.ListCreateAPIView):
     queryset = Professor.objects.all()
@@ -149,3 +149,24 @@ class MyTokenObtainPairView(TokenObtainPairView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+
+class FichasTreinoAPIView(generics.ListCreateAPIView):
+    queryset = FichaTreino.objects.all()
+    serializer_class = FichaTreinoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Opcional: Filtra para mostrar apenas fichas relacionadas ao usuário
+        user = self.request.user
+        if hasattr(user, 'professor'):
+            return FichaTreino.objects.all() # Professor vê tudo (por enquanto)
+        elif hasattr(user, 'aluno'):
+            return FichaTreino.objects.filter(aluno__user=user) # Aluno só vê as dele
+        return FichaTreino.objects.none()
+    
+
+class FichaTreinoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FichaTreino.objects.all()
+    serializer_class = FichaTreinoSerializer
+    permission_classes = [IsAuthenticated]
