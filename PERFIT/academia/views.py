@@ -90,14 +90,25 @@ class AlunosAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        
+
         if user.is_superuser:
-            return Aluno.objects.all()
+            queryset = Aluno.objects.all()
+        elif hasattr(user, 'professor'):
+            queryset = Aluno.objects.filter(professor=user.professor)
+        else:
+            return Aluno.objects.none()
+        
+        ativo_param = self.request.query_params.get('ativo')
 
-        if hasattr(user, 'professor'):
-            return Aluno.objects.filter(professor=user.professor)
-
-        return Aluno.objects.none()
+        if ativo_param is not None:
+            #.../alunos/?ativo=false
+            if ativo_param.lower() in ['false', '0']:
+                return queryset.filter(ativo=False)
+            
+            #.../alunos/?ativo=true
+            return queryset.filter(ativo=True)
+        
+        return queryset.filter(ativo=True)
 
     #sobrescrevendo os metodos para documentacao no swagger
 

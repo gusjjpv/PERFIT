@@ -58,13 +58,17 @@ class AlunoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Aluno
-        fields = ('user', 'professor')
+        fields = ('user', 'professor', 'ativo')
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
         user_serializer = UserSerializer(instance.user, data=user_data, partial=True)
         if user_serializer.is_valid():
             user_serializer.save()
+
+        instance.ativo = validated_data.get('ativo', instance.ativo)
+        instance.save()
+
         return super().update(instance, validated_data)
 
 
