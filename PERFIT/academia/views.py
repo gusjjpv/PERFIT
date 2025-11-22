@@ -205,11 +205,47 @@ class FichasTreinoAPIView(generics.ListCreateAPIView):
             return FichaTreino.objects.filter(aluno__user=user) # Aluno só vê as dele
         return FichaTreino.objects.none()
     
+    # documentacao
+
+    @extend_schema(
+        summary="Listar fichas de treino",
+        responses=FichaTreinoSerializer(many=True),
+        description="Lista todas as fichas de treino visíveis ao usuário autenticado."
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Criar ficha de treino",
+        request=FichaTreinoSerializer,
+        responses=OpenApiResponse(FichaTreinoSerializer),
+        description="Cria uma ficha de treino."
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 class FichaTreinoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FichaTreino.objects.all()
     serializer_class = FichaTreinoSerializer
     permission_classes = [IsAuthenticated]
+
+    #documentacao
+
+    @extend_schema(summary="Buscar ficha de treino por ID")
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @extend_schema(summary="Atualizar ficha de treino")
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    @extend_schema(summary="Atualizar parcialmente ficha de treino")
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
+
+    @extend_schema(summary="Excluir ficha de treino")
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
 
 
 class FichaDeDadosAPIView(generics.RetrieveUpdateAPIView, generics.CreateAPIView):
@@ -265,3 +301,22 @@ class AvaliacaoFisicaListCreateAPIView(generics.ListCreateAPIView):
              raise PermissionDenied("Você não pode avaliar um aluno que não é seu.")
 
         serializer.save(aluno_id=aluno_id)
+    
+    #documentacao
+
+    @extend_schema(
+        summary="Listar avaliações físicas",
+        responses=AvaliacaoFisicaSerializer(many=True),
+        description="Lista todas as avaliações físicas feitas para o aluno especificado."
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Criar avaliação física",
+        request=AvaliacaoFisicaSerializer,
+        responses=AvaliacaoFisicaSerializer,
+        description="Cria uma nova avaliação física para o aluno especificado."
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
