@@ -1,13 +1,14 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, filters, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from .permissions import IsProfessor
-from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer
 from drf_spectacular.utils import extend_schema, OpenApiResponse
-from .models import Professor, Aluno, FichaTreino, FichaDeDados
-from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, AlunoDetailSerializer, FichaTreinoSerializer, FichaDeDadosSerializer)
+from .models import Professor, Aluno, FichaTreino, FichaDeDados, AvaliacaoFisica
+from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, AlunoDetailSerializer, FichaTreinoSerializer, FichaDeDadosSerializer, AvaliacaoFisicaSerializer)
 
 class ProfessoresAPIView(generics.ListCreateAPIView):
     queryset = Professor.objects.all()
@@ -247,3 +248,20 @@ class FichaDeDadosAPIView(generics.RetrieveUpdateAPIView, generics.CreateAPIView
     @extend_schema(summary="Atualizar Ficha de Dados", description="Atualiza peso, altura, etc.")
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
+
+
+class AvaliacaoFisicaListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = AvaliacaoFisicaSerializer
+    permission_classes = [IsAuthenticated, IsProfessor]
+
+    def get_queryset(self):
+        aluno_id = self.kwargs['pk']
+        return AvaliacaoFisica.objects.filter(aluno_id=aluno_id)
+
+    def perform_create(self, serializer):
+        aluno_id = self.kwargs['pk']
+        aluno = get_object_or_404(Aluno, pk=aluno_id)
+        if not self.request.user.is_superuser and aluno.professor.user != self.request.user:
+             raise PermissionDenied("Você não pode avaliar um aluno que não é seu.")
+
+        serializer.save(aluno_id=aluno_id)
