@@ -1,11 +1,13 @@
-from rest_framework import generics
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, filters, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from .permissions import IsProfessor
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer
 from drf_spectacular.utils import extend_schema, OpenApiResponse
-from .models import Professor, Aluno, FichaTreino
-from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, FichaTreinoSerializer)
+from .models import Professor, Aluno, FichaTreino, FichaDeDados
+from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, AlunoDetailSerializer, FichaTreinoSerializer, FichaDeDadosSerializer)
 
 class ProfessoresAPIView(generics.ListCreateAPIView):
     queryset = Professor.objects.all()
@@ -77,6 +79,10 @@ class ProfessorAPIView(generics.RetrieveUpdateDestroyAPIView):
 class AlunosAPIView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsProfessor]
 
+    filter_backends = [filters.SearchFilter]
+    #campos que seram buscados
+    search_fields = ['user__first_name', 'user__username', 'user__email']
+
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return AlunoCreateSerializer
@@ -124,11 +130,19 @@ class AlunoAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AlunoSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_serializer_class(self):
+        #se for apenas VER (GET), usa o serializer completo (com ficha)
+        if self.request.method == 'GET':
+            return AlunoDetailSerializer
+        #se for Editar/Deletar, usa o normal
+        return AlunoSerializer
+
     #sobrescrevendo os metodos para documentacao no swagger
 
     @extend_schema(
         summary="Busca aluno por ID",
-        description="Retorna os dados de um aluno específico."
+        description="Retorna os dados de um aluno específico.",
+        responses=AlunoDetailSerializer
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -139,6 +153,10 @@ class AlunoAPIView(generics.RetrieveUpdateDestroyAPIView):
     )
     def put(self, request, *args, **kwargs):
         return super().put(request, *args, **kwargs)
+
+    @extend_schema(summary="Atualiza parcialmente aluno")
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
 
     @extend_schema(
         summary="Remove aluno",
@@ -180,3 +198,41 @@ class FichaTreinoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FichaTreino.objects.all()
     serializer_class = FichaTreinoSerializer
     permission_classes = [IsAuthenticated]
+
+
+class FichaDeDadosAPIView(generics.RetrieveUpdateAPIView, generics.CreateAPIView):
+    serializer_class = FichaDeDadosSerializer
+    permission_classes = [IsAuthenticated, IsProfessor]
+
+    def get_object(self):
+        aluno_id = self.kwargs['pk'] # Pega o ID do Aluno da URL
+
+        return get_object_or_404(FichaDeDados, aluno_id=aluno_id)
+
+    def create(self, request, *args, **kwargs):
+        aluno_id = self.kwargs['pk']
+        
+        if FichaDeDados.objects.filter(aluno_id=aluno_id).exists():
+            return Response(
+                {"detail": "Este aluno já tem ficha. Use PATCH para editar."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Se não existe, cria e vincula o ID manualmente
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(aluno_id=aluno_id)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @extend_schema(summary="Obter Ficha de Dados", description="Retorna os dados corporais do aluno.")
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    @extend_schema(summary="Criar Ficha de Dados", description="Cria a ficha inicial (Peso, Altura, etc).")
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+    
+    @extend_schema(summary="Atualizar Ficha de Dados", description="Atualiza peso, altura, etc.")
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)

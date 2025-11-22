@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
 
 class Professor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -10,8 +11,9 @@ class Professor(models.Model):
 
 class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-
     professor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Professor Responsavel", related_name="meus_alunos")
+
+    ativo = models.BooleanField("Aluno Ativo?", default=True)
 
     def __str__(self):
         return self.user.first_name or self.user.username
@@ -20,14 +22,25 @@ class Aluno(models.Model):
 class FichaDeDados(models.Model):
     aluno = models.OneToOneField(Aluno, on_delete=models.CASCADE, primary_key=True, verbose_name= "Aluno", related_name='fichadedados')
 
-    peso = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Peso (Kg)")
-    altura = models.DecimalField(max_digits=3, decimal_places=2, verbose_name="Altura (m)")
-    imc = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="IMC", null=True, blank=True)
+    peso = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="Peso (Kg)")
+    altura = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True, verbose_name="Altura (m)")
+    imc = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, verbose_name="IMC")
+    data_nascimento = models.DateField(null=True, blank=True, verbose_name="Data de Nascimento")
+    idade = models.IntegerField(null=True, blank=True, verbose_name="Idade")
+
     objetivo = models.CharField(max_length=255, blank=True)
     profissao = models.CharField(max_length=50, blank=True)
     problema_saude = models.CharField(max_length=255, blank=True)
 
     def save(self, *args, **kwargs):
+        if self.data_nascimento:
+            today = date.today()
+            self.idade = today.year - self.data_nascimento.year - (
+                (today.month, today.day) < (self.data_nascimento.month, self.data_nascimento.day)
+            )
+        else:
+            self.idade = None
+
         if self.peso and self.altura and self.altura > 0:
             self.imc = self.peso / (self.altura * self.altura)
         else:

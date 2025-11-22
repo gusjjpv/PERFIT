@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Professor, Aluno, FichaTreino, Treino, Exercicio
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .models import Professor, Aluno, FichaTreino, Treino, Exercicio, FichaDeDados
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -162,3 +163,16 @@ class FichaTreinoSerializer(serializers.ModelSerializer):
                 Exercicio.objects.create(treino=treino, **exercicio_data)
         
         return ficha
+
+
+class FichaDeDadosSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FichaDeDados
+        exclude = ['aluno']
+
+
+class AlunoDetailSerializer(AlunoSerializer):
+    fichadedados = FichaDeDadosSerializer(read_only=True)
+
+    class Meta(AlunoSerializer.Meta):
+        fields = AlunoSerializer.Meta.fields + ('fichadedados',)
