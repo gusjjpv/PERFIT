@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from .permissions import IsProfessor
 from .serializers import MyTokenObtainPairSerializer
 from drf_spectacular.utils import extend_schema, OpenApiResponse
-from .models import Professor, Aluno, FichaTreino, FichaDeDados, AvaliacaoFisica
-from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, AlunoDetailSerializer, FichaTreinoSerializer, FichaDeDadosSerializer, AvaliacaoFisicaSerializer)
+from .models import Professor, Aluno, FichaTreino, FichaDeDados, AvaliacaoFisica, AvaliacaoPa
+from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, AlunoDetailSerializer, FichaTreinoSerializer, FichaDeDadosSerializer, AvaliacaoFisicaSerializer, AvaliacaoPaSerializer)
 
 class ProfessoresAPIView(generics.ListCreateAPIView):
     queryset = Professor.objects.all()
@@ -320,3 +320,23 @@ class AvaliacaoFisicaListCreateAPIView(generics.ListCreateAPIView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+
+class AvaliacaoPaListCreateAPIView(generics.ListCreateAPIView):
+   #/api/v1/alunos/<pk>/avaliacoes-pa/
+
+    serializer_class = AvaliacaoPaSerializer
+    permission_classes = [IsAuthenticated, IsProfessor]
+
+    def get_queryset(self):
+        aluno_id = self.kwargs['pk']
+        return AvaliacaoPa.objects.filter(aluno_id=aluno_id)
+
+    def perform_create(self, serializer):
+        aluno_id = self.kwargs['pk']
+        
+        aluno = get_object_or_404(Aluno, pk=aluno_id)
+        if not self.request.user.is_superuser and aluno.professor.user != self.request.user:
+             raise PermissionDenied("Você não pode registrar dados para este aluno.")
+
+        serializer.save(aluno_id=aluno_id)
