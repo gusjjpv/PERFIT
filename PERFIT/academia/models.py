@@ -92,8 +92,10 @@ class AvaliacaoPa(models.Model):
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, verbose_name ="Aluno", related_name='avaliacoes_pa')
 
     data = models.DateTimeField(verbose_name='Data da avaliação', auto_now_add=True)
+
     paSistolica = models.IntegerField("PA Sistolica")
     paDiastolica = models.IntegerField("PA Diastolica")
+    glicemia = models.IntegerField("Glicemia (mg/dL)", null=True, blank=True)
     momento = models.CharField(max_length=10, choices=MomentoChoices.choices)
 
     class Meta:
