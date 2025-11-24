@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, filters, status
+from rest_framework import generics, status
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -111,6 +113,23 @@ class AlunosAPIView(generics.ListCreateAPIView):
         
         return queryset.filter(ativo=True)
 
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        
+        return Response(
+            {
+                "message": "Aluno cadastrado com sucesso!",
+                "data": serializer.data
+            },
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
     #sobrescrevendo os metodos para documentacao no swagger
 
     @extend_schema(
@@ -148,6 +167,34 @@ class AlunoAPIView(generics.RetrieveUpdateDestroyAPIView):
             return AlunoDetailSerializer
         #se for Editar/Deletar, usa o normal
         return AlunoSerializer
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(
+            {
+                "message": "Dados do aluno atualizados com sucesso!",
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+        instance.ativo = False
+        instance.save()
+        
+        return Response(
+            {
+                "message": "Aluno desativado com sucesso!"
+            },
+            status=status.HTTP_200_OK
+        )
 
     #sobrescrevendo os metodos para documentacao no swagger
 
