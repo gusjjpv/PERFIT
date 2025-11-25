@@ -7,7 +7,8 @@ interface ButtonProps {
   width?: string,
   color?: 'primary' | 'secondary',
   gradient?: boolean,
-  onClick?: () => void
+  type?: 'submit' | 'button'
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 interface ButtonStyles {
@@ -36,9 +37,9 @@ const ButtonContainer = styled.button<ButtonStyles>`
   cursor: pointer;
 `
 
-export default function Button({ children, font, width, color, onClick, gradient }: ButtonProps) {
+export default function Button({ children, font, width, color, type, onClick, gradient }: ButtonProps) {
   return (
-    <ButtonContainer onClick={onClick} $font={font} $width={width} $color={color} $gradient={gradient}>
+    <ButtonContainer type={type} onClick={onClick} $font={font} $width={width} $color={color} $gradient={gradient}>
       {children}
     </ButtonContainer>
   )

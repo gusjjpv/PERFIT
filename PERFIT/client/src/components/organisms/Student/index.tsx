@@ -6,6 +6,23 @@ import StudentInfo from "../../molecules/StudentInfo";
 import { LoadingContext } from "../../../context/LoadingContext";
 import Loading from "../../../animation/loading";
 import Input from "../../atoms/Input";
+import { useNavigate, useParams } from "react-router-dom";
+import { getAccessTokenInLocalStorage } from "../../../storage/LocalStorage";
+import type { StudentData } from "../../../types";
+import { success } from "../../../utils/toastfy";
+import Button from "../../atoms/Button";
+import { SignCreateStudentContext } from "../../../context/SignCreateStudentContext";
+
+interface StudentProps {
+  weight: number, 
+  height: number, 
+  bmi: string, 
+  idade: number,
+  goal: string, 
+  data_nascimento: string,
+  profession: string, 
+  healthProblem: string
+}
 
 interface StudentInfoStyle {
   $chosenSection: boolean
@@ -13,7 +30,6 @@ interface StudentInfoStyle {
 
 const Container = styled.div`
   position: absolute;
-  //height: 650px;
   height: 95%;
   width: 95%;
   top: 50%;
@@ -28,7 +44,7 @@ const Container = styled.div`
   @media (min-width: 768px) {
     max-width: 50%;
   }
-`
+`;
 
 const ContainerSecond = styled.div`
   display: flex;
@@ -55,28 +71,14 @@ const Avatar = styled.div`
   height: 80px; 
   border-radius: 50%; 
   background-color: #ff0000; 
-  flex-shrink: 0; 
-
-  /*
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-  */
+  flex-shrink: 0;
 `;
 
-
-
-// No componente Student.jsx
 const TextContent = styled.div`
   display: flex;
   flex-direction: column; 
   flex-grow: 1;
-  min-width: 0; /* <--- CORREÇÃO CRÍTICA: Permite que o flex item (TextContent) seja menor que o conteúdo */
-      /* <--- NOVO: Limita a altura do parágrafo a cerca de 3-4 linhas */
-
+  min-width: 0; 
   
   h2 {
     font-size: 1.5rem;
@@ -117,42 +119,240 @@ const IconWrapper = styled.div<StudentInfoStyle>`
   font-size: 1.5rem; 
   color: ${({ theme, $chosenSection }) => $chosenSection ? `${theme.colors.primary.orange}` : '#888'};
   cursor: pointer;
-`
+`;
 
 const ConfigContainer = styled.div`
   margin-left: auto;
-`
+`;
 
-/* const ContainerBtns = styled.div`
+const ContainerBtns = styled.div`
   display: flex;
   justify-content: center;
   gap: 1.5rem;
-  position: relative;
-  top: 50px;
-` */
+  margin-top: 2rem;
+`;
+
+// ----------------------------------
+// MODAL DE CONFIRMAÇÃO
+// ----------------------------------
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+`;
+
+const ModalContainer = styled.div`
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn .2s ease;
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+`;
+
+const ModalTitle = styled.h2`
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+`;
+
+const ModalText = styled.p`
+  color: #444;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+`;
+
+const ModalButtons = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+`;
+
+// -------------------------------
+// COMPONENTE PRINCIPAL
+// -------------------------------
 
 export default function Student() {
-  const [ chosenSection, setChosenSection ] = useState<string>('info')
-  const [ isEdit, setIsEdit ] = useState<boolean>(false)
-  const [ goal, setGoal ] = useState<string>('')
-  const { loading, setLoading } = useContext(LoadingContext)
+  const [chosenSection, setChosenSection] = useState<string>('info');
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [goal, setGoal] = useState<string>('Qual o objetivo?');
+  const { loading, setLoading } = useContext(LoadingContext);
+  const [student, setStudent] = useState<StudentData>();
+  const { id } = useParams<string>();
+  const navigate = useNavigate();
+  const { setSignStudent } = useContext(SignCreateStudentContext);
+  const [ desactiveStudent, setDesactiveStudent ] = useState<boolean>(false)
+
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const handleSection = (newSection: string) => {
-    setChosenSection(newSection)
-  }
+    setChosenSection(newSection);
+  };
 
   const toogleEdition = () => {
-    setIsEdit((prev) => !prev)
-  }
+    setIsEdit((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchStudentData = async () => {
+      setLoading(true);
+      const accessToken = getAccessTokenInLocalStorage();
+      
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/`, {
+          method: 'GET',
+          headers: { 
+            'Authorization': `Bearer ${accessToken}`
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setStudent(data);
+        } else {
+          console.error("Falha ao buscar dados do aluno.");
+        }
+      } catch (error) {
+        console.error("Erro interno ao buscar dados:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudentData();
+  }, [id]);
+
+  const getInfo = async () => {
+    const accessToken = getAccessTokenInLocalStorage();
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/ficha/`, {
+        method: 'GET',
+        headers: { 
+          'Authorization': `Bearer ${accessToken}`
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        const data = await response.json();
+        console.log(data);
+      }
+    } catch (error) {
+      console.log("Internal Error: ", error);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false)
-    }, 3000)
+      setLoading(false);
+    }, 3000);
     
-    return () => clearTimeout(timer)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    return () => clearTimeout(timer);
+  }, []);
+
+  const patchStudent = async ({ weight, height, bmi, goal, idade, data_nascimento, profession, healthProblem }: StudentProps) => {
+    const accessToken = getAccessTokenInLocalStorage();
+    
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/ficha/`, {
+        method: 'PATCH',
+        headers: { 
+          "Content-Type": "application/json", 
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ 
+          peso: weight,
+          altura: height,
+          imc: bmi,
+          idade,
+          data_nascimento,
+          objetivo: goal,
+          profissao: profession,
+          problema_saude: healthProblem
+        }),
+      });
+
+      if (response.ok) {
+        await response.json();
+        success("Dados atualizados!");
+      } else {
+        const data = await response.json();
+        console.error("Falha ao buscar dados do aluno.", data);
+      }
+    } catch (error) {
+      console.error("Erro interno ao buscar dados:", error);
+    }
+  };
+
+  const deleteStudent = async () => {
+    const accessToken = getAccessTokenInLocalStorage();
+    
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/`, {
+        method: 'DELETE',
+        headers: { 
+          'Authorization': `Bearer ${accessToken}`
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        success(data.message);
+        setSignStudent(prev => !prev);
+        navigate('/personal');
+      } else {
+        const data = await response.json();
+        console.error("Falha ao deletar aluno.", data);
+      }
+    } catch (error) {
+      console.error("Erro interno ao buscar dados:", error);
+    }
+  }
+
+  const handleDesactiveStudent = async () => {
+    const accessToken = getAccessTokenInLocalStorage();
+    
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/`, {
+        method: 'DELETE',
+        headers: { 
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ativo: desactiveStudent})
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        success(data.message);
+        setSignStudent(prev => !prev);
+        setDesactiveStudent(prev => !prev)
+      } else {
+        const data = await response.json();
+        console.error("Falha ao deletar aluno.", data);
+      }
+    } catch (error) {
+      console.error("Erro interno ao buscar dados:", error);
+    }
+  };
 
   return (
     <>
@@ -161,59 +361,100 @@ export default function Student() {
           <Loading />
         ) : (
           <>
-            <ContainerSecond>
-              <TopSection>
-                <Avatar>
-                  {/* <img src="/caminho/para/avatar.png" alt="Avatar do Aluno" /> */}
-                </Avatar>
-    
-                <TextContent>
-                  <h2>Fulano</h2>
-                  {isEdit ? (
-                    <Input id="0" type="textarea" placeholder="Tenho como objetivo emagrecer Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque nobis amet modi quasi accusantium perferendis blanditiis quod. Tempore odit, fuga sed nisi laudantium nulla, quae, labore expedita in nesciunt blanditiis!" disabled={!isEdit} padding="0.5rem 0.5rem 3rem .5rem" isTextarea="textarea" onChange={(e) => setGoal(e.target.value)} />
-                  ) : (
-                    <p>Tenho como objetivo emagrecer Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque nobis amet modi quasi accusantium perferendis blanditiis quod. Tempore odit, fuga sed nisi laudantium nulla, quae, labore expedita in nesciunt blanditiis!</p>
-                  )}
-                </TextContent>
-                
-                <EditIcon>
-                  <FaEdit onClick={toogleEdition}/> 
-                </EditIcon>
-              </TopSection>
-    
-              <BottomIcons>
-                <IconWrapper $chosenSection={chosenSection === 'info'} onClick={() => handleSection('info')}>
-                  <FaInfoCircle onClick={() => handleSection('info')} />
-                </IconWrapper>
-    
-                <IconWrapper $chosenSection={chosenSection === 'a.v.'} onClick={() => handleSection('a.v.')}>
-                  <FaClipboardList onClick={() => handleSection('a.v.')} /> 
-                </IconWrapper>
-    
-                <ConfigContainer>
-                  <IconWrapper $chosenSection={chosenSection === 'config'} onClick={() => handleSection('config')}>
-                    <FaCog onClick={() => handleSection('config')} /> 
+            {student && (
+              <ContainerSecond>
+                <TopSection>
+                  <Avatar />
+
+                  <TextContent>
+                    <h2>{student.user.first_name}</h2>
+                    {isEdit ? (
+                      <Input
+                        id="0"
+                        type="textarea"
+                        placeholder="Qual o objetivo?"
+                        disabled={!isEdit}
+                        padding="0.5rem 0.5rem 3rem .5rem"
+                        isTextarea="textarea"
+                        value={goal}
+                        onChange={(e) => setGoal(e.target.value)}
+                      />
+                    ) : (
+                      <p>{goal ?? 'Qual o objetivo?'}</p>
+                    )}
+                  </TextContent>
+                  
+                  <EditIcon>
+                    <FaEdit onClick={toogleEdition} />
+                  </EditIcon>
+                </TopSection>
+
+                <BottomIcons>
+                  <IconWrapper $chosenSection={chosenSection === 'info'} onClick={() => handleSection('info')}>
+                    <FaInfoCircle />
                   </IconWrapper>
-                </ConfigContainer>
-              </BottomIcons>
-    
-            </ContainerSecond>
+
+                  <IconWrapper $chosenSection={chosenSection === 'a.v.'} onClick={() => handleSection('a.v.')}>
+                    <FaClipboardList /> 
+                  </IconWrapper>
+
+                  <ConfigContainer>
+                    <IconWrapper $chosenSection={chosenSection === 'config'} onClick={() => handleSection('config')}>
+                      <FaCog /> 
+                    </IconWrapper>
+                  </ConfigContainer>
+                </BottomIcons>
+              </ContainerSecond>
+            )}
             
             {chosenSection === 'info' && (
-              <StudentInfo goal={goal} setGoal={setGoal} isEdit={isEdit} setIsEdit={setIsEdit} disabled={!isEdit} />
+              <StudentInfo
+                goal={goal}
+                setGoal={setGoal}
+                isEdit={isEdit}
+                setIsEdit={setIsEdit}
+                disabled={!isEdit}
+                patchUser={patchStudent}
+                getInfo={getInfo}
+              />
             )}
 
-{/*             {isEdit && (
+            {chosenSection === 'config' && (
               <ContainerBtns>
-                <Button onClick={closeEdition} gradient={true}>Salvar</Button>
-                <Button onClick={closeEdition} color="primary">Cancelar</Button>
+                <Button width="10rem" onClick={() => setOpenDeleteModal(true)}>
+                  Excluir
+                </Button>
+
+                <Button onClick={handleDesactiveStudent} width="10rem">
+                  {desactiveStudent ? 'Desativado' : 'Ativo'}
+                </Button>
               </ContainerBtns>
-            )} */}
+            )}
           </>
         )}
-
       </Container>
 
+      {/* MODAL DE CONFIRMAÇÃO */}
+      {openDeleteModal && (
+        <Overlay>
+          <ModalContainer>
+            <ModalTitle>Excluir aluno?</ModalTitle>
+            <ModalText>
+              Tem certeza que deseja <strong>excluir permanentemente</strong> este aluno?
+            </ModalText>
+
+            <ModalButtons>
+              <Button width="8rem" onClick={() => setOpenDeleteModal(false)}>
+                Cancelar
+              </Button>
+
+              <Button width="8rem" onClick={deleteStudent}>
+                Confirmar
+              </Button>
+            </ModalButtons>
+          </ModalContainer>
+        </Overlay>
+      )}
 
       <Footer />
     </>

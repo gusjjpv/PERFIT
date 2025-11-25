@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import HomePersonal from "../../molecules/HomePersonal";
 import Footer from "../Footer";
+import { useContext, useEffect, useState } from "react";
+import { getAccessTokenInLocalStorage } from "../../../storage/LocalStorage";
+import type { StudentData } from "../../../types";
+import { SignCreateStudentContext } from "../../../context/SignCreateStudentContext";
 
 const Container = styled.div`
   position: absolute;
@@ -21,27 +25,35 @@ const Container = styled.div`
 `
 
 export default function Personal() {
+  const [ students, setStudents ] = useState<StudentData[] | null>(null)
+  const { signStudent } = useContext(SignCreateStudentContext)
 
-  const students = [
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'},
-    {image: '/logo.png', name: 'Fulano'}
-  ]
+  useEffect(() => {
+    const getStudents = async () => {
+      const accessToken = getAccessTokenInLocalStorage()
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/v1/alunos/', {
+          method: 'GET',
+          headers: { 
+            'Authorization': `Bearer ${accessToken}`
+          },
+        })
+  
+        if(response.ok) {
+          const data = await response.json()
+          console.log(data)
+          setStudents(data)
+        } else {
+          const data = await response.json()
+          console.log(data)
+        }
+      } catch(error) {
+        console.log("Internal Error: " + error)
+      }
+    }
+
+    getStudents()
+  }, [signStudent])
 
   return (
     <>

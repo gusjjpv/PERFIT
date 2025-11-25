@@ -3,6 +3,9 @@ import styled, { css, keyframes } from 'styled-components'
 import { ModalContext } from '../../../context/ModalContext';
 import Button from '../../atoms/Button';
 import Input from '../../atoms/Input';
+import { getAccessTokenInLocalStorage } from '../../../storage/LocalStorage';
+import { success } from '../../../utils/toastfy';
+import { SignCreateStudentContext } from '../../../context/SignCreateStudentContext';
 
 const slideUp = keyframes`
   from {
@@ -40,7 +43,7 @@ const Container = styled.div<CreateStudentStyleProps>`
   left: 50%;    
   transform: translate(-50%, -50%); 
   width: 95%;
-  background-image: linear-gradient(139deg, #ffffff, #d7e2ef);
+  background-image: linear-gradient(292deg, #ffffff, #e1e1e1);
   border: 1px solid #0000003d;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -87,7 +90,7 @@ const ContainerForm = styled.form`
   margin-top: 3rem;
 
   div {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
   }
 `
 
@@ -111,17 +114,49 @@ export default function CreateStudent() {
   const [ email, setEmail ] = useState<string>('')
   const [ firstName, setFirstname ] = useState<string>('')
 
+  const { setSignStudent } = useContext(SignCreateStudentContext)
+
   const closeModal = () => {
     setOffAnimation(true)
   }
 
+  const clearForm = () => {
+    setUsername('');
+    setPassword('');
+    setEmail('');
+    setFirstname('');
+  };
+
   const handleCreateStudent = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    const accessToken = getAccessTokenInLocalStorage()
+
     try {
-      console.log(username)
-      console.log(password)
-      console.log(email)
-      console.log(firstName)
+      const response = await fetch('http://127.0.0.1:8000/api/v1/alunos/', {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json", 
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ 
+          username,
+          password,
+          email,
+          first_name: firstName
+        }),
+      })
+
+      if(response.ok) {
+        const data = await response.json()
+        clearForm()
+        success(data.message)
+        setSignStudent(prev => !prev)
+      } else {
+        const data = await response.json()
+        console.log(data)
+      }
+
     } catch(error) {
       console.log("Internal Error:", error) 
     }
@@ -149,18 +184,18 @@ export default function CreateStudent() {
 
       <ContainerForm onSubmit={handleCreateStudent}>
         <StyledLabel>Usuário</StyledLabel>
-        <Input id='1' type='text' placeholder='Digite o nome de usuário' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" onChange={(e) => setUsername(e.target.value)} />
+        <Input id='1' type='text' placeholder='Digite o nome de usuário' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" value={username} onChange={(e) => setUsername(e.target.value)} />
 
         <StyledLabel>Senha</StyledLabel>
-        <Input id='2' type='text' placeholder='Digite a senha' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='secondary' onChange={(e) => setPassword(e.target.value)} />
+        <Input id='2' type='text' placeholder='Digite a senha' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={password} onChange={(e) => setPassword(e.target.value)} />
 
         <StyledLabel>Email</StyledLabel>
-        <Input id='3' type='email' placeholder='Digite o email' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='primary' onChange={(e) =>  setEmail(e.target.value)} />
+        <Input id='3' type='email' placeholder='Digite o email' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={email} onChange={(e) =>  setEmail(e.target.value)} />
 
         <StyledLabel>Primeiro nome</StyledLabel>
-        <Input id='4' type='text' placeholder='Digite o primeiro nome' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='primary' onChange={(e) => setFirstname(e.target.value)} />
+        <Input id='4' type='text' placeholder='Digite o primeiro nome' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={firstName} onChange={(e) => setFirstname(e.target.value)} />
 
-        <Button width='100'>Cadastrar</Button>
+        <Button width='10rem'>Cadastrar</Button>
       </ContainerForm>
 
     </Container>

@@ -1,12 +1,13 @@
 import styled from 'styled-components'
 import Input from '../../atoms/Input'
 import Button from '../../atoms/Button'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useContext, useEffect, useState, type ReactNode } from 'react'
 import React from 'react' 
-import { handleLogin } from '../../auth/login'
-import type { TokenUser } from '../../../types'
+import { handleLogin } from '../../auth/auth'
 import { useNavigate } from 'react-router-dom'
 import { error } from '../../../utils/toastfy'
+import { UserContext } from '../../../context/UserContext'
+import { setItemInLocalStorage } from '../../../storage/LocalStorage'
 
 interface InputProps {
   id: string
@@ -71,26 +72,23 @@ const ContainerInput = styled.div`
 export default function LoginForm({ input } : LoginFormProps) {
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [user, setUser] = useState<TokenUser | null>(null)
+  const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate() 
-
   
   const login = async (e: React.FormEvent) => {
     e.preventDefault() 
-   
-    console.log('Username:', username)
-    console.log('Password:', password)
 
     const response = await handleLogin(username, password)
     setUser(response)
-    console.log(user)
+
+    setItemInLocalStorage(response.access, response.refresh, response)
+
     console.log(response)
   }
 
   useEffect(() => {
     if (user) {
       if (user.role === "professor") {
-    
         navigate('/personal');
       }
 
@@ -98,7 +96,7 @@ export default function LoginForm({ input } : LoginFormProps) {
         navigate('/aluno');
       }
 
-      error(user.detail)
+      if(user.detail.trim()) error(user.detail)
     }
   }, [user, navigate]);
 
@@ -137,7 +135,7 @@ export default function LoginForm({ input } : LoginFormProps) {
           </React.Fragment>
         ))}
         
-        <Button width='15rem' gradient={true}>
+        <Button width='10rem' gradient={true}>
           Entrar
         </Button>
       </ContainerForm>
