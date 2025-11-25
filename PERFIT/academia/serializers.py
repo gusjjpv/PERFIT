@@ -168,6 +168,29 @@ class FichaTreinoSerializer(serializers.ModelSerializer):
         
         return ficha
 
+    def update(self, instance, validated_data):
+        # Atualiza campos simples da ficha
+        instance.nome = validated_data.get('nome', instance.nome)
+        instance.data_fim = validated_data.get('data_fim', instance.data_fim)
+        instance.observacoes = validated_data.get('observacoes', instance.observacoes)
+        
+        # Se enviar treinos no body, atualiza os treinos aninhados
+        treinos_data = validated_data.get('treinos', None)
+        if treinos_data is not None:
+            # Remove treinos antigos (CASCADE deleta exercícios automaticamente)
+            instance.treinos.all().delete()
+            
+            # Recria treinos com os novos dados
+            for treino_data in treinos_data:
+                exercicios_data = treino_data.pop('exercicios', [])
+                treino = Treino.objects.create(ficha=instance, **treino_data)
+                
+                for exercicio_data in exercicios_data:
+                    Exercicio.objects.create(treino=treino, **exercicio_data)
+        
+        instance.save()
+        return instance
+
 
 class FichaDeDadosSerializer(serializers.ModelSerializer):
     class Meta:
