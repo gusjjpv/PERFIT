@@ -2,20 +2,41 @@ import styled from "styled-components";
 import Input from "../../atoms/Input";
 import { FaUser } from "react-icons/fa";
 import { GiAges } from "react-icons/gi";
-import { MdHealthAndSafety } from "react-icons/md";
+import { MdHealthAndSafety, MdWork } from "react-icons/md";
 import { GiBodyHeight } from "react-icons/gi";
 import { FaWeightHanging } from "react-icons/fa";
 import { BsFillUsbMicroFill } from "react-icons/bs";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import Button from "../../atoms/Button";
-import { error, success } from "../../../utils/toastfy";
+
+interface StudentProps {
+  weight: number, 
+  height: number, 
+  bmi: string, 
+  goal: string, 
+  idade: number,
+  data_nascimento: string,
+  profession: string, 
+  healthProblem: string
+}
 
 interface StudentInfoProps {
   goal?: string,
   setGoal?: Dispatch<SetStateAction<string>>,
   isEdit?: boolean,
   setIsEdit?: Dispatch<SetStateAction<boolean>>,
-  disabled?: boolean
+  disabled?: boolean,
+  patchUser?: (data: StudentProps) => Promise<void>,
+  getInfo?: () => Promise<{
+    peso: number;
+    altura: number;
+    objetivo: string;
+    imc: string;
+    idade: number;
+    data_nascimento: string;
+    profissao: string;
+    problema_saude: string;
+  }>
 }
 
 const WrapperScroll = styled.div<StudentInfoProps>`
@@ -100,31 +121,37 @@ const ContainerBtns = styled.div`
   top: 50px;
 `
 
-export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled } : StudentInfoProps) {
+export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled, patchUser, getInfo } : StudentInfoProps) {
   const [ name, setName ] = useState<string>('')
   const [ age, setAge ] = useState<number>(0)
+  const [ date, setDate ] = useState<string>('')
+  const [ profession, setProfession ] = useState<string>('')
   const [ healthProblem, setHealthProblem ] = useState<string>('')
-  const [ height, setHeight ] = useState<string>('')
-  const [ weight, setWeight ] = useState<string>('')
-  const [ imc, setImc ] = useState<string>('')
+  const [ height, setHeight ] = useState<number>(0)
+  const [ weight, setWeight ] = useState<number>(0)
+  const [ bmi, setBmi ] = useState<string>('0')
   
 
-  const handleEdit = () => {
-    if(!name?.trim() || !healthProblem?.trim() || !height?.trim() || !weight?.trim() || !imc?.trim() || age <= 0) {
-      console.log("Error getting name, age or health problem", name, healthProblem)
-      error("Erro")
-      return
-    } 
+  const handleEdit = async () => {
 
-    console.log("Objetivo:", goal)
-    console.log("Nome:", name)
-    console.log("Idade:", age)
-    console.log("Problema:", healthProblem)
-    console.log("Altura:", height)
-    console.log("Peso:", weight)
-    console.log("IMC:", imc)
-
-    success("Funcionado!")
+    const studentData: StudentProps = {
+      weight, 
+      height, 
+      bmi, 
+      goal, 
+      data_nascimento: date,
+      idade: age,
+      profession, 
+      healthProblem
+    }
+    
+    try {
+      if(patchUser) await patchUser(studentData)
+      if(setIsEdit) setIsEdit(false) 
+    } catch (error) {
+        // Tratar erro
+        console.error("Erro ao salvar dados", error);
+    }
 
     if(setIsEdit) {
       setIsEdit(false)
@@ -144,70 +171,101 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
     setHealthProblem('')
   }
 
+  useEffect(() => {
+    const catchInfo = async () => {
+      if(getInfo) {
+        const data = await getInfo()
+
+        if(data) {
+          setWeight(data.peso)
+          setHeight(data.altura)
+          if(setGoal) setGoal(data.objetivo)
+          setBmi(data.imc)
+          setAge(data.idade)
+          setDate(data.data_nascimento)
+          setProfession(data.profissao)
+          setHealthProblem(data.problema_saude)
+        }
+      }
+    }
+
+    catchInfo()
+  }, [])
+
   return (
     <>
-        <WrapperScroll disabled={disabled}>
-            <ContainerForm>
-            <StyledLabel>Nome</StyledLabel>
-            <InputWrapper>
-                <Input id="1" type="text" placeholder="Fulano" width={90} icon={<FaUser />} disabled={disabled} variant="tertiary" onChange={(e) => setName(e.target.value)} />
-            </InputWrapper>
+      <WrapperScroll disabled={disabled}>
+        <ContainerForm>
+          <StyledLabel>Nome</StyledLabel>
+          <InputWrapper>
+              <Input id="1" type="text" placeholder="Fulano" width={90} icon={<FaUser />} disabled={disabled} variant="tertiary" value={name} onChange={(e) => setName(e.target.value)} />
+          </InputWrapper>
 
-            <StyledLabel>Idade</StyledLabel>
-            <InputWrapper>
-                <Input id="2" type="number" placeholder="60" width={90} icon={<GiAges />} disabled={disabled} variant="tertiary" onChange={(e) => setAge ? setAge(Number(e.target.value)) : ''}/>
-            </InputWrapper>
+          <StyledLabel>Idade</StyledLabel>
+          <InputWrapper>
+              <Input id="2" type="number" placeholder="60" width={90} icon={<GiAges />} disabled={true} variant="tertiary" value={age} onChange={(e) => setAge(Number(e.target.value))}/>
+          </InputWrapper>
 
-            <StyledLabel>Problemas de saúde</StyledLabel>
-            <InputWrapper>
-                <Input id="3" type="text" placeholder="Preguiça" width={90} icon={<MdHealthAndSafety />} disabled={disabled} variant="tertiary" onChange={(e) => setHealthProblem(e.target.value)} />
-            </InputWrapper>
-            </ContainerForm>
+          <StyledLabel>Data de nascimento</StyledLabel>
+          <InputWrapper>
+              <Input id="3" type="date" placeholder="" width={90} icon={<GiAges />} disabled={disabled} variant="tertiary" value={date} onChange={(e) => setDate(e.target.value)}/>
+          </InputWrapper>
 
-          <Divider />
-          <MeajuresContainer>
-              <MeajureText>
-              <GiBodyHeight />
-              <h3>Altura</h3>
-              </MeajureText>
-              {isEdit ? (
-                <Input id="4" type="text" placeholder="1.70cm" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setHeight(e.target.value)} />
-              ) : (
-                <ValueText>1.70cm</ValueText>
-              )}
-          </MeajuresContainer>
+          <StyledLabel>Profissão</StyledLabel>
+          <InputWrapper>
+              <Input id="4" type="text" placeholder="Ex.: Professor(a)" width={90} icon={<MdWork />} disabled={disabled} variant="tertiary" value={profession} onChange={(e) => setProfession(e.target.value)}/>
+          </InputWrapper>
 
-          <MeajuresContainer>
-              <MeajureText>
-              <FaWeightHanging />
-              <h3>Peso</h3>
-              </MeajureText>
-              {isEdit ? (
-                <Input id="5" type="text" placeholder="65kg" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setWeight(e.target.value)} />
-              ) : (
-                <ValueText>65kg</ValueText>
-              )}
-          </MeajuresContainer>
+          <StyledLabel>Problemas de saúde</StyledLabel>
+          <InputWrapper>
+              <Input id="5" type="text" placeholder="Preguiça" width={90} icon={<MdHealthAndSafety />} disabled={disabled} variant="tertiary" value={healthProblem} onChange={(e) => setHealthProblem(e.target.value)} />
+          </InputWrapper>
+        </ContainerForm>
 
-          <MeajuresContainer>
-              <MeajureText>
-              <BsFillUsbMicroFill />
-              <h3>IMC</h3>
-              </MeajureText>
-              {isEdit ? (
-                <Input id="6" type="text" placeholder="22.2" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setImc(e.target.value)} />
-              ) : (
-                <ValueText>22.2</ValueText>
-              )}
-          </MeajuresContainer>
+        <Divider />
+        <MeajuresContainer>
+            <MeajureText>
+            <GiBodyHeight />
+            <h3>Altura</h3>
+            </MeajureText>
+            {isEdit ? (
+              <Input id="6" type="number" placeholder="1.70cm" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setHeight(Number(e.target.value))} />
+            ) : (
+              <ValueText>{height} cm</ValueText>
+            )}
+        </MeajuresContainer>
 
-          {isEdit && (
-            <ContainerBtns>
-              <Button onClick={handleEdit} gradient={true}>Salvar</Button>
-              <Button onClick={closeEdition} color="primary">Cancelar</Button>
-            </ContainerBtns>
-          )}
-        </WrapperScroll>
+        <MeajuresContainer>
+            <MeajureText>
+            <FaWeightHanging />
+            <h3>Peso</h3>
+            </MeajureText>
+            {isEdit ? (
+              <Input id="7" type="number" placeholder="65kg" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setWeight(Number(e.target.value))} />
+            ) : (
+              <ValueText>{weight} kg</ValueText>
+            )}
+        </MeajuresContainer>
+
+        <MeajuresContainer>
+            <MeajureText>
+            <BsFillUsbMicroFill />
+            <h3>IMC</h3>
+            </MeajureText>
+            {isEdit ? (
+              <Input id="8" type="text" placeholder="22.2" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setBmi(e.target.value)} />
+            ) : (
+              <ValueText>{bmi ?? '0'}</ValueText>
+            )}
+        </MeajuresContainer>
+
+        {isEdit && (
+          <ContainerBtns>
+            <Button onClick={handleEdit} gradient={true}>Salvar</Button>
+            <Button onClick={closeEdition} color="primary">Cancelar</Button>
+          </ContainerBtns>
+        )}
+      </WrapperScroll>
         
     </>
   )

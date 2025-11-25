@@ -12,6 +12,7 @@ class Professor(models.Model):
 class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     professor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Professor Responsavel", related_name="meus_alunos")
+    ativo = models.BooleanField("Aluno Ativo?", default=True)
 
     ativo = models.BooleanField("Aluno Ativo?", default=True)
 

@@ -2,9 +2,9 @@ import type { ReactNode } from 'react'
 import styled from 'styled-components'
 
 interface InputProps {
-  id: string,
+  id?: string,
   type: string,
-  placeholder: string,
+  placeholder?: string,
   width?: number,
   icon?: ReactNode,
   disabled?: boolean,
@@ -12,7 +12,9 @@ interface InputProps {
   isTextarea?: string,
   variant?: string,
   variantPlaceholder?: string,
-  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void 
+  value?: string | number,
+  onChange?:(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void 
+  required?: boolean
 }
 
 interface InputStyles {
@@ -44,8 +46,7 @@ const StyledInput = styled.input<InputStyles>`
           case "secondary":
             return theme.colors.primary.orange;
           case "tertiary":
-            // ... (sua lógica)
-            return theme.colors.primary.orange;
+            return theme.colors.primary.black;
           default:
             return theme.colors.primary.gray;
         }
@@ -85,7 +86,7 @@ const IconWrapper = styled.span<InputStyles>`
   font-size: 1rem;
 `
 
-export default function Input({ id, type, placeholder, width, icon, disabled, padding, isTextarea, variant, variantPlaceholder, onChange } : InputProps) {
+export default function Input({ id, type, placeholder, width, icon, disabled, padding, isTextarea, variant, variantPlaceholder, value, onChange, required } : InputProps) {
   return (
     <InputWrapper $width={width} $disabled={disabled} $padding={padding} >
       {icon && (
@@ -102,7 +103,9 @@ export default function Input({ id, type, placeholder, width, icon, disabled, pa
         disabled={disabled}
         $padding={padding}
         $variantPlaceholder={variantPlaceholder}
+        value={value}
         onChange={onChange}
+        required={required}
       />
     </InputWrapper>
   )

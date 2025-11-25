@@ -77,11 +77,11 @@ class AlunoCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
     email = serializers.EmailField(write_only=True)
     first_name = serializers.CharField(write_only=True, required=False, default='')
-    
+    ativo = serializers.BooleanField(default=True)
 
     class Meta:
         model = Aluno
-        fields = ('username', 'password', 'email', 'first_name')
+        fields = ('username', 'password', 'email', 'first_name', 'ativo')
 
     def create(self, validated_data):
         user_data = {
@@ -96,6 +96,9 @@ class AlunoCreateSerializer(serializers.ModelSerializer):
         professor_logado = request.user.professor
         
         aluno = Aluno.objects.create(user=user, professor=professor_logado, **validated_data)
+        
+        FichaDeDados.objects.create(aluno=aluno)
+        
         return aluno
     
 
