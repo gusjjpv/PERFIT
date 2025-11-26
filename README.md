@@ -5,18 +5,25 @@ Sistema para personal trainer
 
 Antes de começar, certifique-se de ter instalado:
 
-1. Docker & Docker Compose:
+## 1. Docker & Docker Compose:
 
 - Windows/Mac: Instale o Docker Desktop.
 - Linux: Instale o `docker` e o plugin `docker-compose-plugin`.
 
-2. Git: Para clonar o repositório.
+## 2. Git: Para clonar o repositório.
 
 ```shell
 git clone https://github.com/gusjjpv/PERFIT.git
 ```
 
-3. Suba o Projeto
+## 3. Instalar o requeriments
+crie o ambiente virtual
+
+```bash
+pip install -r requirements.txt
+```
+
+## 4. Suba o Projeto
 
 Na raiz do projeto (onde está o arquivo docker-compose.yml), rode:
 ```shell
@@ -24,16 +31,16 @@ Na raiz do projeto (onde está o arquivo docker-compose.yml), rode:
 sudo docker compose up --build
 ```
 
-### Configurando o Banco de Dados (Essencial)
+## 5. Configurando o Banco de Dados (Essencial)
 
 Com o container rodando (deixe o terminal anterior aberto e abra um novo), execute:
 
-1. Criar as Tabelas (Migrate)
+#### 1. Criar as Tabelas (Migrate)
 ```shell
 sudo docker compose exec web python manage.py migrate
 ```
 
-2. Criar um Usuário Admin (Superuser)
+#### 2. Criar um Usuário Admin (Superuser)
 ```shell
 sudo docker compose exec web python manage.py createsuperuser
 ```
@@ -53,21 +60,27 @@ Pronto! Acesse http://localhost/admin e faça login
 ## Cheatsheet
 
 **Subir o servidor**
-```shell
+```bash
 docker compose up
 ```
 
-**Subir e recontruir**
-```shell
+**Subir e buildar**
+```bash
 docker compose up --build
 ```
 
 **Parar o servidor**
-```shell
-Ctrl + C
+```bash
+sudo docker compose down
 ```
 
 **Rodar Migrations**
-```shell
+```bash
 docker compose exec web python manage.py makemigrations
+docker compose exec web python manage.py migrate
+```
+
+**criar o super user**
+```bash
+sudo docker compose exec web python manage.py createsuperuser
 ```
