@@ -10,10 +10,7 @@ export const setItemInLocalStorage = (accessToken ?: string, refreshToken ?: str
     }
 
     if(userData && typeof userData === 'object') {
-        localStorage.setItem('user', JSON.stringify({
-            firstname: userData.first_name,
-            role: userData.role
-        }))
+        localStorage.setItem('user', JSON.stringify(userData))
     }
 }
 

@@ -5,7 +5,8 @@ import Personal from './components/organisms/Personal';
 import { UserContext } from './context/UserContext';
 import { cleanLocalStorage, getAccessTokenInLocalStorage, getRefreshTokenInLocalStorage, getUserDataInLocaStorage } from './storage/LocalStorage';
 import Student from './components/organisms/Student';
-import { refreshAccessToken } from './components/auth/auth';
+import { refreshAccessToken } from './auth/auth';
+import { setupFetchInterceptor } from './auth/fetchUser';
 
 export function AppRoutes() {
   const { user, setUser } = useContext(UserContext);
@@ -65,18 +66,27 @@ export function AppRoutes() {
   }, [location.pathname, navigate, user])
 
   useEffect(() => {
-    refreshAccessToken()
-  }, [])
+    refreshAccessToken(setUser)
+  }, [setUser])
+
+  useEffect(() => {
+    setupFetchInterceptor(setUser);
+  }, [setUser]);
 
   // Atualiza o token a cada 2 minutos
   useEffect(() => {
     const intervalId = setInterval(() => {
-      const response = refreshAccessToken()
-      if(response == null) {
+     const update = async () => {
+      const response = await refreshAccessToken(setUser)
+      if (!response) {
         setUser(null)
         cleanLocalStorage()
         navigate('/')
       }
+    }
+
+    update()
+
     }, 1 * 60 * 1000)
   
     return () => clearInterval(intervalId)

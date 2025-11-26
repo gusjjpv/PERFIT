@@ -34,8 +34,6 @@ interface WorkoutPlanApi {
   treinos: DailyWorkoutApi[];
 }
 
-
-
 interface SelectedStudent {
   id: number;
   name: string;
@@ -56,8 +54,6 @@ interface NewDayState {
     descricao: string,
     isAddingExercise: boolean, 
 }
-
-// --- PROPS E ESTILOS ---
 
 interface WorkoutProps {
     isModalWorkout: boolean,
@@ -295,7 +291,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
       }
       
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/alunos/', {
+        const response = await fetch('http://34.200.36.243/api/v1/alunos/', {
           method: 'GET',
           headers: { 
             'Authorization': `Bearer ${accessToken}`
@@ -310,8 +306,8 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
           console.error("Erro ao listar alunos:", data);
           error(`Erro ao carregar alunos: ${JSON.stringify(data)}`);
         }
-      } catch(error) {
-        console.error("Erro interno na listagem de alunos:", error);
+      } catch(err) {
+        console.error("Erro interno na listagem de alunos:", err);
         error("Erro interno ao tentar carregar a lista de alunos.");
       } finally {
           setIsStudentsLoading(false); 
@@ -337,7 +333,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/v1/fichasTreino/${workoutId}/`, {
+            const response = await fetch(`http://34.200.36.243/api/v1/fichasTreino/${workoutId}/`, {
                 method: 'GET',
                 headers: { 
                   'Authorization': `Bearer ${accessToken}`
@@ -370,8 +366,8 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                 console.error("Erro ao carregar ficha de treino:", errorData);
                 error("Erro ao carregar ficha de treino.");
             }
-        } catch(error) {
-            console.error("Erro interno ao carregar ficha de treino:", error);
+        } catch(err) {
+            console.error("Erro interno ao carregar ficha de treino:", err);
             error("Erro interno ao tentar carregar a ficha de treino.");
         } finally {
             setIsWorkoutLoading(false);
@@ -381,8 +377,6 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
     loadWorkoutData();
   }, [workoutId]); 
 
-
-  // --- FUNÇÕES DE MANIPULAÇÃO DO ESTADO ---
 
   const handleWorkoutChange = <K extends keyof WorkoutPlanState>(key: K, value: WorkoutPlanState[K]) => {
     setWorkoutData(prev => ({ ...prev, [key]: value }));
@@ -460,7 +454,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
   };
   
   // Função para editar o dia de treino existente
-  const handleEditDailyWorkout = (dailyIndex: number, key: keyof DailyWorkoutApi, value: any) => {
+  const handleEditDailyWorkout = (dailyIndex: number, key: keyof DailyWorkoutApi, value: string | number) => {
     setWorkoutData(prev => ({
         ...prev,
         dailyWorkouts: prev.dailyWorkouts.map((day, index) => {
@@ -473,7 +467,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
   };
 
   // Função para editar o exercício existente
-  const handleEditExercise = (dailyIndex: number, exerciseIndex: number, key: keyof ExerciseApi, value: any) => {
+  const handleEditExercise = (dailyIndex: number, exerciseIndex: number, key: keyof ExerciseApi, value: string | number) => {
     setWorkoutData(prev => ({
         ...prev,
         dailyWorkouts: prev.dailyWorkouts.map((day, dIndex) => {
@@ -521,8 +515,8 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
     const isEditing = !!workoutId; 
     const method = isEditing ? "PATCH" : "POST";
     const url = isEditing 
-        ? `http://127.0.0.1:8000/api/v1/fichasTreino/${workoutId}/` 
-        : 'http://127.0.0.1:8000/api/v1/fichasTreino/'; 
+        ? `http://34.200.36.243/api/v1/fichasTreino/${workoutId}/` 
+        : 'http://34.200.36.243/api/v1/fichasTreino/'; 
 
     const payload = {
       aluno: workoutData.alunoId, 
@@ -568,8 +562,8 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
         error(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} treino. Verifique o console.`);
       }
 
-    } catch(error) {
-      console.error("Internal Error:", error); 
+    } catch(err) {
+      console.error("Internal Error:", err); 
       error("Erro interno ao tentar processar o treino.");
     }
   };

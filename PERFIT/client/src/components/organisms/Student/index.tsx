@@ -18,7 +18,7 @@ interface StudentProps {
   height: number, 
   bmi: string, 
   idade: number,
-  goal: string, 
+  goal?: string, 
   data_nascimento: string,
   profession: string, 
   healthProblem: string
@@ -132,10 +132,6 @@ const ContainerBtns = styled.div`
   margin-top: 2rem;
 `;
 
-// ----------------------------------
-// MODAL DE CONFIRMAÇÃO
-// ----------------------------------
-
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -215,7 +211,7 @@ export default function Student() {
       const accessToken = getAccessTokenInLocalStorage();
       
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/`, {
+        const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/`, {
           method: 'GET',
           headers: { 
             'Authorization': `Bearer ${accessToken}`
@@ -242,7 +238,7 @@ export default function Student() {
     const accessToken = getAccessTokenInLocalStorage();
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/ficha/`, {
+      const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/ficha/`, {
         method: 'GET',
         headers: { 
           'Authorization': `Bearer ${accessToken}`
@@ -273,7 +269,7 @@ export default function Student() {
     const accessToken = getAccessTokenInLocalStorage();
     
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/ficha/`, {
+      const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/ficha/`, {
         method: 'PATCH',
         headers: { 
           "Content-Type": "application/json", 
@@ -307,7 +303,7 @@ export default function Student() {
     const accessToken = getAccessTokenInLocalStorage();
     
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/`, {
+      const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/`, {
         method: 'DELETE',
         headers: { 
           'Authorization': `Bearer ${accessToken}`
@@ -332,7 +328,7 @@ export default function Student() {
     const accessToken = getAccessTokenInLocalStorage();
     
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/alunos/${id}/`, {
+      const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/`, {
         method: 'DELETE',
         headers: { 
           'Authorization': `Bearer ${accessToken}`

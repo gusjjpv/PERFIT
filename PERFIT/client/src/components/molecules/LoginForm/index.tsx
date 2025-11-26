@@ -3,7 +3,7 @@ import Input from '../../atoms/Input'
 import Button from '../../atoms/Button'
 import { useContext, useEffect, useState, type ReactNode } from 'react'
 import React from 'react' 
-import { handleLogin } from '../../auth/auth'
+import { handleLogin } from '../../../auth/auth'
 import { useNavigate } from 'react-router-dom'
 import { error } from '../../../utils/toastfy'
 import { UserContext } from '../../../context/UserContext'
@@ -96,7 +96,10 @@ export default function LoginForm({ input } : LoginFormProps) {
         navigate('/aluno');
       }
 
-      if(user.detail.trim()) error(user.detail)
+      if (user?.detail) {
+        const detail = user.detail?.toString().trim();
+        if (detail) error(detail);
+      }
     }
   }, [user, navigate]);
 
