@@ -13,7 +13,7 @@ interface StudentProps {
   weight: number, 
   height: number, 
   bmi: string, 
-  goal: string, 
+  goal?: string, 
   idade: number,
   data_nascimento: string,
   profession: string, 

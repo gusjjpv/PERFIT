@@ -6,13 +6,22 @@ import type { StudentData } from '../../../types';
 import { error, success } from '../../../utils/toastfy';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
+export interface ExercicioSchema {
+  id: number;
+  nome: string;
+  series: number;
+  repeticoes: number;
+  descanso: string;
+  observacao: string | null;
+}
+
 export interface TreinoDetalheSchema {
   id: number;
   ordem: number;
   titulo: string;
   descricao: string;
   dia_semana: "SEG" | "TER" | "QUA" | "QUI" | "SEX" | "SAB" | "DOM";
-  exercicios: any[];
+  exercicios: ExercicioSchema[];
 }
 
 export interface FichaTreinoSchema {
@@ -53,7 +62,7 @@ const Container = styled.div<StyleProps>`
   top: 10%;
   left: 50%;
   transform: translate(-50%, 0%);
-  width: 95%;
+  min-width: 50%;
   max-width: 750px;
   height: 85%;
   background-image: linear-gradient(292deg, #ffffff, #e1e1e1);
@@ -158,7 +167,7 @@ export default function Workouts({
       if (!token) return error("Token não encontrado.");
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/v1/alunos/", {
+        const res = await fetch("http://34.200.36.243/api/v1/alunos/", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -191,7 +200,7 @@ export default function Workouts({
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/v1/fichasTreino/`,{ 
+        `http://34.200.36.243/api/v1/fichasTreino/`,{ 
           headers: { 
             Authorization: `Bearer ${token}` 
           }}
@@ -199,7 +208,7 @@ export default function Workouts({
 
       if (!res.ok) return error("Erro ao carregar treinos.");
 
-      let data = await res.json();
+      let data: FichaTreinoSchema[] = await res.json();
 
       if (!Array.isArray(data)) data = [data];
 
@@ -224,7 +233,7 @@ export default function Workouts({
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/fichasTreino/${id}/`, { 
+        `http://34.200.36.243/api/v1/fichasTreino/${id}/`, { 
           method: "DELETE", 
           headers: { Authorization: `Bearer ${token}` 
         }}

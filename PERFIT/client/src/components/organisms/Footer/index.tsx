@@ -10,38 +10,74 @@ import CreateWorkout from '../../molecules/CreateWorkout';
 import Workouts from '../../molecules/Workouts';
 
 const Container = styled.div`
-    display: flex;
-    position: absolute;
-    bottom: 0;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    background-color: white;
-    border: 1px solid #00000029;
-    border-radius: 5px;
-    padding: .4rem;
-    z-index: 999;
+    position: fixed; 
+    bottom: 0; 
+    left: 50%;
+    transform: translateX(-50%); 
+    width: 95%; 
+    
+    @media (min-width: 768px) {
+        max-width: 50%; 
+    }
 
-    ul {
+    background-color: #ffffff; 
+    border-top: 1px solid #e0e0e0; 
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08); 
+    
+    display: flex;
+    justify-content: space-around; 
+    align-items: center;
+    padding: 0.5rem 0; 
+    z-index: 1000; 
+
+    ul { 
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         list-style: none;
-        gap: .2rem;
+        padding: 0; 
+        margin: 0;
+        cursor: pointer; 
+        transition: color 0.3s ease; 
+        min-width: 60px; 
+        
+        &:hover {
+            color: #007bff; 
+        }
 
         svg {
-            height: 34px;
-            width: 34px;
+            height: 24px; 
+            width: 24px;
+            color: #6c757d; 
+            margin-bottom: 2px;
+            transition: color 0.3s ease;
         }
 
         li {
-            color: #333333;
-            font-weight: 600;
+            color: #6c757d; 
+            font-size: 0.75rem; 
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        &:hover svg, &:hover li {
+            color: #007bff; 
         }
     }
-`
+
+    a {
+        text-decoration: none; 
+        color: inherit;
+        
+        ul {
+            &:hover svg, &:hover li {
+                color: #28a745; 
+            }
+        }
+    }
+`;
 
 export default function Footer() {
     const { isModal, setIsModal } = useContext(ModalContext)
@@ -56,7 +92,7 @@ export default function Footer() {
         setIsModal(true)
         setIsCreateWorkoutModalOpen(false) 
         setIsViewWorkoutsModalOpen(false) 
-        setWorkoutIdToEdit(undefined) // Limpa o ID ao iniciar outro fluxo
+        setWorkoutIdToEdit(undefined) 
     }
 
     // Função para abrir o modal de CRIAÇÃO de treino
@@ -64,20 +100,20 @@ export default function Footer() {
         setIsCreateWorkoutModalOpen(true)
         setIsModal(false)
         setIsViewWorkoutsModalOpen(false) 
-        setWorkoutIdToEdit(undefined) // Garante que está no modo de CRIAÇÃO
+        setWorkoutIdToEdit(undefined) 
     }
 
-    // Função para abrir o modal de VISUALIZAÇÃO/GERENCIAMENTO de treinos
     const openViewWorkoutsModal = () => {
         setIsViewWorkoutsModalOpen(true)
         setIsModal(false)
         setIsCreateWorkoutModalOpen(false)
-        setWorkoutIdToEdit(undefined) // Limpa o ID ao iniciar a visualização
+        setWorkoutIdToEdit(undefined) 
     }
  
   return (
     <>
         <Container>
+      
             <Link to='/personal'>
                 <ul>
                     <MdHome />
@@ -101,11 +137,11 @@ export default function Footer() {
             </ul>
         </Container>
 
+        {/* Renderização dos Modals */}
         {isModal && (
             <CreateStudent />
         )}
 
-        {/* 3. Renderiza o modal de CRIAÇÃO/EDIÇÃO (CreateWorkout) */}
         {isCreateWorkoutModalOpen && (
             <CreateWorkout 
                 isModalWorkout={isCreateWorkoutModalOpen} 
@@ -114,7 +150,6 @@ export default function Footer() {
             />
         )}
 
-        {/* 4. Renderiza o modal de VISUALIZAÇÃO/GERENCIAMENTO (Workouts) */}
         {isViewWorkoutsModalOpen && (
             <Workouts 
                 isModalWorkout={isViewWorkoutsModalOpen} 
