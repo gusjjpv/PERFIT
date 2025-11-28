@@ -25,14 +25,14 @@ services:
     image: nginx:1.25-alpine
     restart: always
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/local.conf:/etc/nginx/conf.d/default.conf
       - static_volume:/app/PERFIT/static
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html  # Pasta compartilhada para validação
+      - web-root:/var/www/html
     ports:
       - "80:80"
-      - "443:443" # Liberamos a porta segura
+      - "443:443"
     depends_on:
       - web
 

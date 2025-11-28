@@ -136,10 +136,12 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-CORS_ALLOWED_ORIGINS = [
-    env("FRONTEND_URL"),
-    env("BACKEND_URL")
-]
+#CORS_ALLOWED_ORIGINS = [
+#    env("FRONTEND_URL"),
+#    env("BACKEND_URL")
+#]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "authorization",
