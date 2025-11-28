@@ -82,8 +82,6 @@ export default function LoginForm({ input } : LoginFormProps) {
     setUser(response)
 
     setItemInLocalStorage(response.access, response.refresh, response)
-
-    console.log(response)
   }
 
   useEffect(() => {

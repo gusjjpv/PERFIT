@@ -1,20 +1,25 @@
 import styled from 'styled-components'
 import { MdHome } from "react-icons/md";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaUser } from "react-icons/fa";
 import { GiWeightLiftingUp } from "react-icons/gi";
-import { Link } from 'react-router-dom';
+import { TbLogout2 } from "react-icons/tb";
+import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';
 import CreateStudent from '../../molecules/CreateStudent';
 import { ModalContext } from '../../../context/ModalContext';
 import CreateWorkout from '../../molecules/CreateWorkout';
 import Workouts from '../../molecules/Workouts';
+import { UserContext } from '../../../context/UserContext';
+import { OverlayContext } from '../../../context/OverlayContext';
+import ConfirmModal from '../../molecules/ConfirmModal';
+import { Logout } from '../../../auth/auth';
 
 const Container = styled.div`
     position: fixed; 
     bottom: 0; 
     left: 50%;
     transform: translateX(-50%); 
-    width: 95%; 
+    width: 100%; 
     
     @media (min-width: 768px) {
         max-width: 50%; 
@@ -23,7 +28,6 @@ const Container = styled.div`
     background-color: #ffffff; 
     border-top: 1px solid #e0e0e0; 
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08); 
-    
     display: flex;
     justify-content: space-around; 
     align-items: center;
@@ -81,11 +85,16 @@ const Container = styled.div`
 
 export default function Footer() {
     const { isModal, setIsModal } = useContext(ModalContext)
-    
+    const { user } = useContext(UserContext)
+    const { setIsOverlay } = useContext(OverlayContext)
+
     const [ isCreateWorkoutModalOpen, setIsCreateWorkoutModalOpen ] = useState<boolean>(false)
     const [ isViewWorkoutsModalOpen, setIsViewWorkoutsModalOpen ] = useState<boolean>(false)
 
     const [ workoutIdToEdit, setWorkoutIdToEdit ] = useState<number | undefined>(undefined)
+    const [ isLogoutProfessor, setIsLogoutProfessor ] = useState<boolean>(false)
+
+    const navigate = useNavigate()
 
     // Função para abrir o modal de cadastro de aluno
     const openModal = () => {
@@ -93,6 +102,10 @@ export default function Footer() {
         setIsCreateWorkoutModalOpen(false) 
         setIsViewWorkoutsModalOpen(false) 
         setWorkoutIdToEdit(undefined) 
+
+        setTimeout(() => {
+            setIsOverlay(true)
+        }, 100)
     }
 
     // Função para abrir o modal de CRIAÇÃO de treino
@@ -101,48 +114,84 @@ export default function Footer() {
         setIsModal(false)
         setIsViewWorkoutsModalOpen(false) 
         setWorkoutIdToEdit(undefined) 
+
+        setTimeout(() => {
+            setIsOverlay(true)
+        }, 100)
     }
 
+    // Função para abrir o modal de EXIBIÇÃO de treino
     const openViewWorkoutsModal = () => {
         setIsViewWorkoutsModalOpen(true)
         setIsModal(false)
         setIsCreateWorkoutModalOpen(false)
         setWorkoutIdToEdit(undefined) 
+
+        setTimeout(() => {
+            setIsOverlay(true)
+        }, 100)
+    }
+
+    const navigateStudentInfo = () => {
+        navigate(`/aluno-info/${user?.user_id}`)
     }
  
   return (
     <>
         <Container>
-      
-            <Link to='/personal'>
-                <ul>
-                    <MdHome />
-                    <li>Início</li>
-                </ul>
-            </Link>
 
-            <ul onClick={openModal}>
-                <FaPlusCircle />
-                <li>Novo aluno(a)</li>
-            </ul>
+            {user?.role === 'professor' ? (
+                <>
+                    <Link to='/personal'>
+                        <ul>
+                            <MdHome />
+                            <li>Início</li>
+                        </ul>
+                    </Link>
 
-            <ul onClick={openCreateWorkoutModal}>
-                <FaPlusCircle /> 
-                <li>Novo Treino</li>
-            </ul>
+                    <ul onClick={openModal}>
+                        <FaPlusCircle />
+                        <li>Novo aluno(a)</li>
+                    </ul>
 
-            <ul onClick={openViewWorkoutsModal}>
-                <GiWeightLiftingUp />
-                <li>Meus Treinos</li>
-            </ul>
+                    <ul onClick={openCreateWorkoutModal}>
+                        <FaPlusCircle /> 
+                        <li>Novo Treino</li>
+                    </ul>
+
+                    <ul onClick={openViewWorkoutsModal}>
+                        <GiWeightLiftingUp />
+                        <li>Meus Treinos</li>
+                    </ul>
+
+                    <ul onClick={() => setIsLogoutProfessor(true)}>
+                        <TbLogout2 />
+                        <li>Logout</li>
+                    </ul>
+                </>
+            ) : (
+                <>
+                    <Link to='/aluno'>
+                        <ul>
+                            <MdHome />
+                            <li>Início</li>
+                        </ul>
+                    </Link>
+                     
+                    <ul onClick={navigateStudentInfo}>
+                        <FaUser />
+                        <li>Meu perfil</li>
+                    </ul>
+                    
+                </>
+            )}
         </Container>
 
-        {/* Renderização dos Modals */}
-        {isModal && (
+        {user?.role === 'professor' && isModal && (
             <CreateStudent />
         )}
 
-        {isCreateWorkoutModalOpen && (
+        {user?.role === 'professor' && isCreateWorkoutModalOpen && (
             <CreateWorkout 
                 isModalWorkout={isCreateWorkoutModalOpen} 
                 setIsModalWorkout={setIsCreateWorkoutModalOpen} 
@@ -150,7 +199,7 @@ export default function Footer() {
             />
         )}
 
-        {isViewWorkoutsModalOpen && (
+        {user?.role === 'professor' && isViewWorkoutsModalOpen && (
             <Workouts 
                 isModalWorkout={isViewWorkoutsModalOpen} 
                 setIsModalWorkout={setIsViewWorkoutsModalOpen} 
@@ -158,6 +207,10 @@ export default function Footer() {
                 setIsCreateWorkoutModalOpen={setIsCreateWorkoutModalOpen}
                 setWorkoutIdToEdit={setWorkoutIdToEdit}
             />
+        )}
+
+        {user?.role === 'professor' && isLogoutProfessor && (
+            <ConfirmModal title='Logout' text='Deseja realmente' strongText='sair' endText='?' setState={setIsLogoutProfessor} func={Logout} />
         )}
     </>
   )

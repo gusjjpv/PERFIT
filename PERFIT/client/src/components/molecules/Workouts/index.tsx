@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import Button from '../../atoms/Button';
 import { getAccessTokenInLocalStorage } from '../../../storage/LocalStorage';
 import type { StudentData } from '../../../types';
 import { error, success } from '../../../utils/toastfy';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import { OverlayContext } from '../../../context/OverlayContext';
 
 export interface ExercicioSchema {
   id: number;
@@ -62,8 +63,7 @@ const Container = styled.div<StyleProps>`
   top: 10%;
   left: 50%;
   transform: translate(-50%, 0%);
-  min-width: 50%;
-  max-width: 750px;
+  min-width: 95%;
   height: 85%;
   background-image: linear-gradient(292deg, #ffffff, #e1e1e1);
   border: 1px solid #0000003d;
@@ -150,7 +150,12 @@ export default function Workouts({
 
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<number | null>(null);
 
-  const closeModal = () => setOffAnimation(true);
+  const { setIsOverlay } = useContext(OverlayContext)
+
+  const closeModal = () => {
+    setOffAnimation(true)
+    setIsOverlay(false)
+  }
 
   useEffect(() => {
     if (!offAnimation) return;
@@ -167,7 +172,7 @@ export default function Workouts({
       if (!token) return error("Token não encontrado.");
 
       try {
-        const res = await fetch("http://34.200.36.243/api/v1/alunos/", {
+        const res = await fetch("https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -200,7 +205,7 @@ export default function Workouts({
 
     try {
       const res = await fetch(
-        `http://34.200.36.243/api/v1/fichasTreino/`,{ 
+        `https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/fichasTreino/`,{ 
           headers: { 
             Authorization: `Bearer ${token}` 
           }}
@@ -233,7 +238,7 @@ export default function Workouts({
 
     try {
       const response = await fetch(
-        `http://34.200.36.243/api/v1/fichasTreino/${id}/`, { 
+        `https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/fichasTreino/${id}/`, { 
           method: "DELETE", 
           headers: { Authorization: `Bearer ${token}` 
         }}

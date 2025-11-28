@@ -21,8 +21,8 @@ const ContainerLogin = styled.div`
 
 export default function Login() {
   const inputs = [
-    { id: 'name', label: 'Nome', type: 'text', placeholder: 'Digite seu nome', icon: <FaUser /> },
-    { id: 'password', label: 'Senha', type: 'password', placeholder: 'Digite sua senha', icon: <RiLockPasswordFill /> },
+    { id: 'name', label: 'Usuário', type: 'text', placeholder: 'Digite seu usuário', icon: <FaUser />, maxLength: 24, required: true },
+    { id: 'password', label: 'Senha', type: 'password', placeholder: 'Digite sua senha', icon: <RiLockPasswordFill />, minLength: 8, maxLength: 24, required: true },
   ]
 
   return (

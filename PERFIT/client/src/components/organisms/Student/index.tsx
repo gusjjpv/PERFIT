@@ -12,13 +12,18 @@ import type { StudentData } from "../../../types";
 import { success } from "../../../utils/toastfy";
 import Button from "../../atoms/Button";
 import { SignCreateStudentContext } from "../../../context/SignCreateStudentContext";
+import { UserContext } from "../../../context/UserContext";
+import { Logout } from "../../../auth/auth";
+import { Container } from "../../../styles/styles";
+import { OverlayContext } from "../../../context/OverlayContext";
+import ConfirmModal from "../../molecules/ConfirmModal";
 
 interface StudentProps {
   weight: number, 
   height: number, 
   bmi: string, 
   idade: number,
-  goal?: string, 
+  goal: string, 
   data_nascimento: string,
   profession: string, 
   healthProblem: string
@@ -27,24 +32,6 @@ interface StudentProps {
 interface StudentInfoStyle {
   $chosenSection: boolean
 }
-
-const Container = styled.div`
-  position: absolute;
-  height: 95%;
-  width: 95%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #ffffff;
-  border: 1px solid black;
-  border-radius: 10px;
-  padding: 2.5rem 0;
-  overflow-y: auto;
-
-  @media (min-width: 768px) {
-    max-width: 50%;
-  }
-`;
 
 const ContainerSecond = styled.div`
   display: flex;
@@ -132,68 +119,23 @@ const ContainerBtns = styled.div`
   margin-top: 2rem;
 `;
 
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-`;
-
-const ModalContainer = styled.div`
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-  animation: fadeIn .2s ease;
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(.95); }
-    to { opacity: 1; transform: scale(1); }
-  }
-`;
-
-const ModalTitle = styled.h2`
-  margin-bottom: 1rem;
-  font-size: 1.4rem;
-  font-weight: bold;
-`;
-
-const ModalText = styled.p`
-  color: #444;
-  margin-bottom: 2rem;
-  font-size: 1rem;
-`;
-
-const ModalButtons = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-`;
-
-// -------------------------------
-// COMPONENTE PRINCIPAL
-// -------------------------------
 
 export default function Student() {
   const [chosenSection, setChosenSection] = useState<string>('info');
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [goal, setGoal] = useState<string>('Qual o objetivo?');
-  const { loading, setLoading } = useContext(LoadingContext);
   const [student, setStudent] = useState<StudentData>();
+  const [ desactiveStudent, setDesactiveStudent ] = useState<boolean>(false)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  
   const { id } = useParams<string>();
   const navigate = useNavigate();
+  
+  const { loading, setLoading } = useContext(LoadingContext);
   const { setSignStudent } = useContext(SignCreateStudentContext);
-  const [ desactiveStudent, setDesactiveStudent ] = useState<boolean>(false)
+  const { user } = useContext(UserContext)
+  const { isOverlay } = useContext(OverlayContext)
 
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const handleSection = (newSection: string) => {
     setChosenSection(newSection);
@@ -211,7 +153,7 @@ export default function Student() {
       const accessToken = getAccessTokenInLocalStorage();
       
       try {
-        const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/`, {
+        const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/${id}/`, {
           method: 'GET',
           headers: { 
             'Authorization': `Bearer ${accessToken}`
@@ -221,6 +163,7 @@ export default function Student() {
         if (response.ok) {
           const data = await response.json();
           setStudent(data);
+          console.log(data)
         } else {
           console.error("Falha ao buscar dados do aluno.");
         }
@@ -238,7 +181,7 @@ export default function Student() {
     const accessToken = getAccessTokenInLocalStorage();
 
     try {
-      const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/ficha/`, {
+      const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/${id}/ficha/`, {
         method: 'GET',
         headers: { 
           'Authorization': `Bearer ${accessToken}`
@@ -269,7 +212,7 @@ export default function Student() {
     const accessToken = getAccessTokenInLocalStorage();
     
     try {
-      const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/ficha/`, {
+      const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/${id}/ficha/`, {
         method: 'PATCH',
         headers: { 
           "Content-Type": "application/json", 
@@ -303,7 +246,7 @@ export default function Student() {
     const accessToken = getAccessTokenInLocalStorage();
     
     try {
-      const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/`, {
+      const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/${id}/`, {
         method: 'DELETE',
         headers: { 
           'Authorization': `Bearer ${accessToken}`
@@ -328,7 +271,7 @@ export default function Student() {
     const accessToken = getAccessTokenInLocalStorage();
     
     try {
-      const response = await fetch(`http://34.200.36.243/api/v1/alunos/${id}/`, {
+      const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/${id}/`, {
         method: 'DELETE',
         headers: { 
           'Authorization': `Bearer ${accessToken}`
@@ -352,7 +295,7 @@ export default function Student() {
 
   return (
     <>
-      <Container>
+      <Container $overlay={isOverlay}>
         {loading ? (
           <Loading />
         ) : (
@@ -379,10 +322,11 @@ export default function Student() {
                       <p>{goal ?? 'Qual o objetivo?'}</p>
                     )}
                   </TextContent>
-                  
-                  <EditIcon>
-                    <FaEdit onClick={toogleEdition} />
-                  </EditIcon>
+                  {user?.role === 'professor' && (
+                    <EditIcon>
+                      <FaEdit onClick={toogleEdition} />
+                    </EditIcon>
+                  )}
                 </TopSection>
 
                 <BottomIcons>
@@ -415,15 +359,27 @@ export default function Student() {
               />
             )}
 
+            {chosenSection === 'a.v.' && (
+              <div style={{ padding: '1rem', fontSize: '2rem'}}>Em breve... </div>
+            )}
+
             {chosenSection === 'config' && (
               <ContainerBtns>
-                <Button width="10rem" onClick={() => setOpenDeleteModal(true)}>
-                  Excluir
-                </Button>
+                {user?.role === 'professor' ? (
+                  <>
+                    <Button width="10rem" onClick={() => setOpenDeleteModal(true)}>
+                      Excluir
+                    </Button>
 
-                <Button onClick={handleDesactiveStudent} width="10rem">
-                  {desactiveStudent ? 'Desativado' : 'Ativo'}
-                </Button>
+                    <Button onClick={handleDesactiveStudent} width="10rem">
+                      {desactiveStudent ? 'Desativado' : 'Ativo'}
+                  </Button>
+                  </>
+                ) : (
+                  <Button width="10rem" onClick={Logout}>
+                    Logout
+                  </Button>
+                )}
               </ContainerBtns>
             )}
           </>
@@ -432,24 +388,7 @@ export default function Student() {
 
       {/* MODAL DE CONFIRMAÇÃO */}
       {openDeleteModal && (
-        <Overlay>
-          <ModalContainer>
-            <ModalTitle>Excluir aluno?</ModalTitle>
-            <ModalText>
-              Tem certeza que deseja <strong>excluir permanentemente</strong> este aluno?
-            </ModalText>
-
-            <ModalButtons>
-              <Button width="8rem" onClick={() => setOpenDeleteModal(false)}>
-                Cancelar
-              </Button>
-
-              <Button width="8rem" onClick={deleteStudent}>
-                Confirmar
-              </Button>
-            </ModalButtons>
-          </ModalContainer>
-        </Overlay>
+        <ConfirmModal title="Excluir aluno?" text="Deseja realmente" strongText="excluir permanentemente" endText="este aluno?" setState={setOpenDeleteModal} func={deleteStudent} />
       )}
 
       <Footer />

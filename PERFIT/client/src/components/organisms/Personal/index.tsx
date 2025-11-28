@@ -1,38 +1,23 @@
-import styled from "styled-components";
 import HomePersonal from "../../molecules/HomePersonal";
 import Footer from "../Footer";
 import { useContext, useEffect, useState } from "react";
-import { getAccessTokenInLocalStorage } from "../../../storage/LocalStorage";
+import { cleanLocalStorage, getAccessTokenInLocalStorage } from "../../../storage/LocalStorage";
 import type { StudentData } from "../../../types";
 import { SignCreateStudentContext } from "../../../context/SignCreateStudentContext";
+import { Container } from "../../../styles/styles";
+import { OverlayContext } from "../../../context/OverlayContext";
 
-const Container = styled.div`
-  position: absolute;
-  //height: 650px;
-  height: 95%;
-  width: 95%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #ffffff;
-  border: 1px solid black;
-  border-radius: 10px;
-  padding: 2.5rem 0;
-
-  @media (min-width: 768px) {
-    max-width: 50%;
-  }
-`
 
 export default function Personal() {
   const [ students, setStudents ] = useState<StudentData[] | null>(null)
   const { signStudent } = useContext(SignCreateStudentContext)
+  const { isOverlay } = useContext(OverlayContext)
 
   useEffect(() => {
     const getStudents = async () => {
       const accessToken = getAccessTokenInLocalStorage()
       try {
-        const response = await fetch('http://34.200.36.243/api/v1/alunos/', {
+        const response = await fetch('https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/', {
           method: 'GET',
           headers: { 
             'Authorization': `Bearer ${accessToken}`
@@ -57,7 +42,7 @@ export default function Personal() {
 
   return (
     <>
-      <Container>
+      <Container $overlay={isOverlay}>
         <HomePersonal students={students} />
       </Container>
 

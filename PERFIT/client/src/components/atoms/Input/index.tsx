@@ -13,7 +13,9 @@ interface InputProps {
   variant?: string,
   variantPlaceholder?: string,
   value?: string | number,
-  onChange?:(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void 
+  minLength?: number | undefined,
+  maxLength?: number | undefined,
+  onChange?:(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void, 
   required?: boolean
 }
 
@@ -86,7 +88,7 @@ const IconWrapper = styled.span<InputStyles>`
   font-size: 1rem;
 `
 
-export default function Input({ id, type, placeholder, width, icon, disabled, padding, isTextarea, variant, variantPlaceholder, value, onChange, required } : InputProps) {
+export default function Input({ id, type, placeholder, width, icon, disabled, padding, isTextarea, variant, variantPlaceholder, value, maxLength, minLength, onChange, required } : InputProps) {
   return (
     <InputWrapper $width={width} $disabled={disabled} $padding={padding} >
       {icon && (
@@ -105,6 +107,8 @@ export default function Input({ id, type, placeholder, width, icon, disabled, pa
         $variantPlaceholder={variantPlaceholder}
         value={value}
         onChange={onChange}
+        minLength={minLength ? minLength : undefined}
+        maxLength={maxLength ? maxLength : undefined}
         required={required}
       />
     </InputWrapper>

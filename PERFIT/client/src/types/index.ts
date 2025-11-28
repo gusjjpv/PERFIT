@@ -29,3 +29,16 @@ export interface StudentData {
 export interface HomePersonalProps {
     students: StudentData[] | null;
 }
+
+export type Week = "SEG" | "TER" | "QUA" | "QUI" | "SEX" | "SAB" | "DOM"
+
+export interface RecordWorkoutProps {
+  id: number;
+  aluno: number;
+  nome: string;
+  observacoes: string;
+  ativa: boolean;
+  //data_inicio: string;
+  data_fim: string;
+  //treinos: Treino[];
+}

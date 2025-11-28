@@ -95,7 +95,8 @@ export default function HomePersonal({ students } : HomePersonalProps) {
     const [ filterByName, setFilterByName ] = useState<string>('')
     const navigate = useNavigate()
 
-    const filteredStudent = students?.filter((el) => el.user.first_name.toLowerCase().includes(filterByName.toLowerCase()) ?? students)
+   const filteredStudent = students?.filter((el) => el.user.first_name?.toLowerCase().includes(filterByName.toLowerCase())) ?? [];
+
 
     const handleStudentClick = (studentId: number) => {
         navigate(`/aluno-info/${studentId}`); 
@@ -123,8 +124,8 @@ export default function HomePersonal({ students } : HomePersonalProps) {
         ) : (
             <>
                 <WrapperStudents>
-                    {students && filteredStudent && Array.isArray(filteredStudent) && filteredStudent.map(( item, index ) => (
-                        <ContainerStudents key={index} onClick={() => handleStudentClick(item.user.id)}>
+                    {students && filteredStudent && Array.isArray(filteredStudent) && filteredStudent.map(( item ) => (
+                        <ContainerStudents key={item.user.id} onClick={() => handleStudentClick(item.user.id)}>
                             <ImageWrapper>
                                 {/* <img loading="lazy" src={item.image} alt={item.name} /> */}
                             </ImageWrapper>

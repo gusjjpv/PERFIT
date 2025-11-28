@@ -13,7 +13,7 @@ interface StudentProps {
   weight: number, 
   height: number, 
   bmi: string, 
-  goal?: string, 
+  goal: string, 
   idade: number,
   data_nascimento: string,
   profession: string, 
@@ -149,7 +149,6 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
       if(patchUser) await patchUser(studentData)
       if(setIsEdit) setIsEdit(false) 
     } catch (error) {
-        // Tratar erro
         console.error("Erro ao salvar dados", error);
     }
 
@@ -175,6 +174,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
     const catchInfo = async () => {
       if(getInfo) {
         const data = await getInfo()
+        console.log("INFO:", data)
 
         if(data) {
           setWeight(data.peso)
