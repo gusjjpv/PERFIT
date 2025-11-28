@@ -80,7 +80,7 @@ class ProfessorAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class AlunosAPIView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated, IsProfessor]
+    permission_classes = [IsAuthenticated]
 
     filter_backends = [filters.SearchFilter]
     #campos que seram buscados
