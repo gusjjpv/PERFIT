@@ -136,6 +136,8 @@ export default function Student() {
   const { user } = useContext(UserContext)
   const { isOverlay } = useContext(OverlayContext)
 
+  console.log("ID:", id)
+  console.log(user)
 
   const handleSection = (newSection: string) => {
     setChosenSection(newSection);

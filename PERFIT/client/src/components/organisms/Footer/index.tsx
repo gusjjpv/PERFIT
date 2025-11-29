@@ -133,8 +133,13 @@ export default function Footer() {
     }
 
     const navigateStudentInfo = () => {
-        navigate(`/aluno-info/${user?.user_id}`)
+        if (!user?.user_id) {
+            navigate('/');
+            return;
+        }
+        navigate(`/aluno-info/${user.user_id}`);
     }
+
  
   return (
     <>

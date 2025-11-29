@@ -2,39 +2,10 @@ import { useContext, useEffect, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import Button from '../../atoms/Button';
 import { getAccessTokenInLocalStorage } from '../../../storage/LocalStorage';
-import type { StudentData } from '../../../types';
+import type { RecordWorkoutProps, StudentData, Workout } from '../../../types';
 import { error, success } from '../../../utils/toastfy';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { OverlayContext } from '../../../context/OverlayContext';
-
-export interface ExercicioSchema {
-  id: number;
-  nome: string;
-  series: number;
-  repeticoes: number;
-  descanso: string;
-  observacao: string | null;
-}
-
-export interface TreinoDetalheSchema {
-  id: number;
-  ordem: number;
-  titulo: string;
-  descricao: string;
-  dia_semana: "SEG" | "TER" | "QUA" | "QUI" | "SEX" | "SAB" | "DOM";
-  exercicios: ExercicioSchema[];
-}
-
-export interface FichaTreinoSchema {
-  id: number;
-  aluno: number;
-  nome: string;
-  data_inicio: string;
-  data_fim: string;
-  ativa: boolean;
-  observacoes: string;
-  treinos: TreinoDetalheSchema[];
-}
 
 interface WorkoutProps {
   isModalWorkout: boolean;
@@ -143,7 +114,7 @@ export default function Workouts({
   const [students, setStudents] = useState<StudentData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [studentWorkouts, setStudentWorkouts] = useState<FichaTreinoSchema[]>([]);
+  const [studentWorkouts, setStudentWorkouts] = useState<RecordWorkoutProps[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
 
   const [isWorkoutLoading, setIsWorkoutLoading] = useState(false);
@@ -213,7 +184,7 @@ export default function Workouts({
 
       if (!res.ok) return error("Erro ao carregar treinos.");
 
-      let data: FichaTreinoSchema[] = await res.json();
+      let data: RecordWorkoutProps[] = await res.json();
 
       if (!Array.isArray(data)) data = [data];
 
@@ -253,7 +224,7 @@ export default function Workouts({
     }
   }
 
-  const enableFullEdit = (w: FichaTreinoSchema) => {
+  const enableFullEdit = (w: Workout) => {
     // 1. Define o ID da ficha a ser editada no estado do componente pai
     setWorkoutIdToEdit(w.id);
     

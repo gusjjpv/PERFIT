@@ -25,11 +25,11 @@ export function AppRoutes() {
       setUser({
         access: accessToken,
         refresh: refreshToken,
-        first_name: userData.firstname,
+        first_name: userData.first_name,
         role: userData.role,
-        detail: '',
-        user_id: 0,
-        username: ''
+        detail: userData.detail,
+        user_id: userData.user_id,
+        username: userData.username
       })
     }
 

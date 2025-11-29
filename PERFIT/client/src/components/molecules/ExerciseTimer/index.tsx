@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { FaPlay, FaPause, FaForward } from "react-icons/fa";
+import { theme } from "../../../styles/theme";
 
 const pulse = keyframes`
   from { transform: scale(1); }
@@ -54,9 +55,28 @@ const Btn = styled.button<{ primary?: boolean }>`
   align-items:center;
 `;
 
-export default function ExerciseTimer({ ex }: { ex: any }) {
-  const label = ex.nome ?? ex.titulo ?? ex.descricao ?? "Exercício";
-  // tempo execução e descanso base
+export interface Exercise {
+  id?: number;
+  nome?: string;
+  titulo?: string;
+  descricao?: string;
+
+  series?: number;
+  series_count?: number;
+
+  repeticoes?: number | string;
+
+  tempo_execucao?: number;
+  tempo_descanso?: number;
+
+  observacoes?: string;
+}
+
+
+export default function ExerciseTimer({ ex }: { ex: Exercise }) {
+  const label =
+    ex.nome ?? ex.titulo ?? ex.descricao ?? "Exercício";
+
   const execTimeDefault = ex.tempo_execucao ?? 30;
   const descansoDefault = ex.tempo_descanso ?? 30;
 
@@ -64,16 +84,17 @@ export default function ExerciseTimer({ ex }: { ex: any }) {
   const [isResting, setIsResting] = useState(false);
   const [execElapsed, setExecElapsed] = useState(0);
   const [restRemaining, setRestRemaining] = useState(descansoDefault);
+
   const execRef = useRef<number | null>(null);
   const restRef = useRef<number | null>(null);
 
-  // circular progress params
   const radius = 26;
   const circumference = 2 * Math.PI * radius;
 
   const beep = () => {
     try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const ctx = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
       const o = ctx.createOscillator();
       const g = ctx.createGain();
       o.type = "sine";
@@ -82,18 +103,18 @@ export default function ExerciseTimer({ ex }: { ex: any }) {
       o.connect(g);
       g.connect(ctx.destination);
       o.start();
-      setTimeout(() => { o.stop(); ctx.close(); }, 200);
-    } catch (err) {
-      // fallback silencioso
-      console.warn("Audio not available", err);
-    }
+      setTimeout(() => {
+        o.stop();
+        ctx.close();
+      }, 200);
+    } catch {}
   };
 
-  // execution timer
+  // execução
   useEffect(() => {
     if (!isRunning) {
       if (execRef.current) {
-        window.clearInterval(execRef.current);
+        clearInterval(execRef.current);
         execRef.current = null;
       }
       return;
@@ -105,13 +126,13 @@ export default function ExerciseTimer({ ex }: { ex: any }) {
 
     return () => {
       if (execRef.current) {
-        window.clearInterval(execRef.current);
+        clearInterval(execRef.current);
         execRef.current = null;
       }
     };
   }, [isRunning]);
 
-  // auto-switch to rest when exec reaches execTimeDefault
+  // troca automática para descanso
   useEffect(() => {
     if (execElapsed >= execTimeDefault && execTimeDefault > 0) {
       setIsRunning(false);
@@ -122,11 +143,11 @@ export default function ExerciseTimer({ ex }: { ex: any }) {
     }
   }, [execElapsed, execTimeDefault, descansoDefault]);
 
-  // rest countdown
+  // descanso
   useEffect(() => {
     if (!isResting) {
       if (restRef.current) {
-        window.clearInterval(restRef.current);
+        clearInterval(restRef.current);
         restRef.current = null;
       }
       return;
@@ -135,7 +156,7 @@ export default function ExerciseTimer({ ex }: { ex: any }) {
     restRef.current = window.setInterval(() => {
       setRestRemaining((t) => {
         if (t <= 1) {
-          window.clearInterval(restRef.current!);
+          clearInterval(restRef.current!);
           restRef.current = null;
           setIsResting(false);
           beep();
@@ -147,33 +168,43 @@ export default function ExerciseTimer({ ex }: { ex: any }) {
 
     return () => {
       if (restRef.current) {
-        window.clearInterval(restRef.current);
+        clearInterval(restRef.current);
         restRef.current = null;
       }
     };
   }, [isResting, descansoDefault]);
 
-  // control handlers
   const handleStart = () => {
     setIsRunning(true);
     setIsResting(false);
     setExecElapsed(0);
   };
-  const handlePause = () => {
-    setIsRunning(false);
-  };
+
+  const handlePause = () => setIsRunning(false);
+
   const handleSkipRest = () => {
     setIsResting(false);
     setRestRemaining(descansoDefault);
   };
 
-  // compute circular progress (exec)
-  const progress = execTimeDefault > 0 ? Math.min(execElapsed / execTimeDefault, 1) : 0;
+  const progress =
+    execTimeDefault > 0
+      ? Math.min(execElapsed / execTimeDefault, 1)
+      : 0;
+
   const strokeDashoffset = circumference * (1 - progress);
 
   return (
     <Card>
-      <div style={{ width: 68, height: 68, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div
+        style={{
+          width: 68,
+          height: 68,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <svg width="68" height="68">
           <g transform="translate(34,34)">
             <circle r={radius} fill="transparent" stroke="#eef5fb" strokeWidth="8" />
@@ -187,7 +218,14 @@ export default function ExerciseTimer({ ex }: { ex: any }) {
               strokeDashoffset={strokeDashoffset}
               transform="rotate(-90)"
             />
-            <text x="0" y="4" textAnchor="middle" fontSize="11" fill="#0b2540" style={{ fontWeight: 700 }}>
+            <text
+              x="0"
+              y="4"
+              textAnchor="middle"
+              fontSize="11"
+              fill="#0b2540"
+              style={{ fontWeight: 700 }}
+            >
               {isResting ? `${restRemaining}s` : `${execElapsed}s`}
             </text>
           </g>
@@ -197,24 +235,31 @@ export default function ExerciseTimer({ ex }: { ex: any }) {
       <Info>
         <Title>{label}</Title>
         <Small>
-          Séries: {ex.series ?? ex.series_count ?? "—"} • Repetições: {ex.repeticoes ?? "—"}
+          Séries: {ex.series ?? ex.series_count ?? "—"} • Repetições:{" "}
+          {ex.repeticoes ?? "—"}
         </Small>
         {ex.observacoes && <Small style={{ marginTop: 6 }}>{ex.observacoes}</Small>}
       </Info>
 
       <Controls>
-        {!isResting ? ( 
+        {!isResting ? (
           <>
             {!isRunning ? (
-              <Btn primary onClick={handleStart}><FaPlay /> Iniciar</Btn>
+              <Btn style={{color: theme.colors.primary.blue}} onClick={handleStart}>
+                <FaPlay /> Iniciar
+              </Btn>
             ) : (
-              <Btn onClick={handlePause}><FaPause /> Parar</Btn>
+              <Btn onClick={handlePause}>
+                <FaPause /> Parar
+              </Btn>
             )}
             <div style={{ fontSize: 12, color: "#556" }}>{execTimeDefault}s alvo</div>
           </>
         ) : (
           <>
-            <Btn onClick={handleSkipRest}><FaForward /> Pular</Btn>
+            <Btn onClick={handleSkipRest}>
+              <FaForward /> Pular
+            </Btn>
             <div style={{ fontSize: 12, color: "#556" }}>Descanso</div>
           </>
         )}

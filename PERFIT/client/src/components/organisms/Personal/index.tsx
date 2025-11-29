@@ -1,7 +1,7 @@
 import HomePersonal from "../../molecules/HomePersonal";
 import Footer from "../Footer";
 import { useContext, useEffect, useState } from "react";
-import { cleanLocalStorage, getAccessTokenInLocalStorage } from "../../../storage/LocalStorage";
+import { getAccessTokenInLocalStorage } from "../../../storage/LocalStorage";
 import type { StudentData } from "../../../types";
 import { SignCreateStudentContext } from "../../../context/SignCreateStudentContext";
 import { Container } from "../../../styles/styles";
