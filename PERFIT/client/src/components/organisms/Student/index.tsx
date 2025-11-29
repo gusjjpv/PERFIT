@@ -123,7 +123,7 @@ const ContainerBtns = styled.div`
 export default function Student() {
   const [chosenSection, setChosenSection] = useState<string>('info');
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [goal, setGoal] = useState<string>('Qual o objetivo?');
+  const [goal, setGoal] = useState<string>('');
   const [student, setStudent] = useState<StudentData>();
   const [ desactiveStudent, setDesactiveStudent ] = useState<boolean>(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -295,6 +295,22 @@ export default function Student() {
     }
   };
 
+/*   useEffect(() => {
+    const reloadInfo = async () => {
+      try {
+        const response = await getInfo()
+        console.log("RESPOSTA", response)
+        setGoal(response.goal)
+        
+
+      } catch(err) {
+        console.log("Internal error: ", err)
+      }
+    }
+
+    reloadInfo()
+  }, []) */
+
   return (
     <>
       <Container $overlay={isOverlay}>
@@ -318,6 +334,9 @@ export default function Student() {
                         padding="0.5rem 0.5rem 3rem .5rem"
                         isTextarea="textarea"
                         value={goal}
+                        minLength={undefined} 
+                        maxLength={50} 
+                        required={false}
                         onChange={(e) => setGoal(e.target.value)}
                       />
                     ) : (

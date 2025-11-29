@@ -37,7 +37,7 @@ interface CreateStudentStyleProps {
 
 const Container = styled.div<CreateStudentStyleProps>`
   position: fixed; 
-  height: 70%;   
+  height: 80%;   
   overflow-y: auto; 
   will-change: transform;
   top: 20%; 
@@ -187,16 +187,16 @@ export default function CreateStudent() {
 
       <ContainerForm onSubmit={handleCreateStudent}>
         <StyledLabel>Usuário</StyledLabel>
-        <Input id='1' type='text' placeholder='Digite o nome de usuário' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" value={username} maxLength={24} onChange={(e) => setUsername(e.target.value)} />
+        <Input id='1' type='text' placeholder='Digite o nome de usuário' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" value={username} minLength={3} maxLength={20} required={false} onChange={(e) => setUsername(e.target.value)} />
 
         <StyledLabel>Senha</StyledLabel>
-        <Input id='2' type='text' placeholder='Digite a senha' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={password} minLength={8} maxLength={24} onChange={(e) => setPassword(e.target.value)} />
+        <Input id='2' type='text' placeholder='Digite a senha' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={password} minLength={8} maxLength={16} required={false} onChange={(e) => setPassword(e.target.value)} />
 
         <StyledLabel>Email</StyledLabel>
-        <Input id='3' type='email' placeholder='Digite o email' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={email} onChange={(e) =>  setEmail(e.target.value)} />
+        <Input id='3' type='email' placeholder='Digite o email' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={email} minLength={undefined} maxLength={50} required={false} onChange={(e) =>  setEmail(e.target.value)} />
 
         <StyledLabel>Primeiro nome</StyledLabel>
-        <Input id='4' type='text' placeholder='Digite o primeiro nome' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' maxLength={3} value={firstName} onChange={(e) => setFirstname(e.target.value)} />
+        <Input id='4' type='text' placeholder='Digite o primeiro nome' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' minLength={undefined} maxLength={20} required={false} value={firstName} onChange={(e) => setFirstname(e.target.value)} />
 
         <Button type='submit' width='10rem'>Cadastrar</Button>
       </ContainerForm>

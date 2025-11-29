@@ -118,7 +118,7 @@ export default function HomePersonal({ students } : HomePersonalProps) {
             <h2>Alunos(a)</h2>
         </WrapperTitle>
 
-        <Input id="0" type="text" placeholder="Pesquise pelo nome" width={90} icon={<IoSearchSharp />} onChange={(e) => setFilterByName(e.target.value)} />
+        <Input id="0" type="text" placeholder="Pesquise pelo nome" width={90} icon={<IoSearchSharp />} minLength={undefined} maxLength={20} required={false} onChange={(e) => setFilterByName(e.target.value)} />
         {loading ? (
             <Loading />
         ) : (

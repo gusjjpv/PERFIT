@@ -22,7 +22,7 @@ const Container = styled.div`
     width: 100%; 
     
     @media (min-width: 768px) {
-        max-width: 50%; 
+        max-width: 46%; 
     }
 
     background-color: #ffffff; 

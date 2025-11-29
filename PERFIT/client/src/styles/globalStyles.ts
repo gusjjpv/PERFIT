@@ -15,6 +15,7 @@ export const GlobalStyles = createGlobalStyle<ContainerStyleConfig>`
     body {
         background-image: url(/bg.png);
         background-size: fill;
+        background-repeat: repeat-x;
         background-color: ${({ $overlay }) => $overlay ? '#ffffff5b' : '#ffffff'};
     }
 
