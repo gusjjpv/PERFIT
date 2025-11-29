@@ -1,6 +1,11 @@
 import { createGlobalStyle } from "styled-components";
 
-export const GlobalStyles = createGlobalStyle`
+interface ContainerStyleConfig {
+    $overlay: boolean
+}
+
+
+export const GlobalStyles = createGlobalStyle<ContainerStyleConfig>`
     * {
         padding: 0;
         margin: 0;
@@ -10,6 +15,7 @@ export const GlobalStyles = createGlobalStyle`
     body {
         background-image: url(/bg.png);
         background-size: fill;
+        background-color: ${({ $overlay }) => $overlay ? '#ffffff5b' : '#ffffff'};
     }
 
     a {

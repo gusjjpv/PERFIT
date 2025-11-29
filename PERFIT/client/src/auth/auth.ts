@@ -3,7 +3,7 @@ import type { TokenUser } from "../types"
 
 export async function handleLogin(username: string, password: string) {
   try {
-    const response = await fetch('http://34.200.36.243/api/token/', {
+    const response = await fetch('https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/token/', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -24,7 +24,7 @@ export async function refreshAccessToken(
   if (!refreshToken) return null
 
   try {
-    const response = await fetch("http://34.200.36.243/api/token/refresh/", {
+    const response = await fetch("https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/token/refresh/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh: refreshToken }),
@@ -54,4 +54,9 @@ export async function refreshAccessToken(
     console.error("Erro ao renovar token:", error)
     return null
   }
+}
+
+export const Logout = () => {
+  cleanLocalStorage()
+  window.location.href = '/'
 }

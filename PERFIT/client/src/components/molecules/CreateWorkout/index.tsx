@@ -1,10 +1,11 @@
-import { useEffect, useState, type ChangeEvent, type MouseEvent, type FormEvent } from 'react';
+import { useEffect, useState, type ChangeEvent, type MouseEvent, type FormEvent, useContext } from 'react';
 import styled, { css, keyframes } from 'styled-components'
 import Button from '../../atoms/Button';
 import Input from '../../atoms/Input';
 import { getAccessTokenInLocalStorage } from '../../../storage/LocalStorage'; 
 import type { StudentData } from '../../../types'; 
 import { error, success } from '../../../utils/toastfy';
+import { OverlayContext } from '../../../context/OverlayContext';
 
 interface ExerciseApi {
   id?: number; 
@@ -264,9 +265,11 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<SelectedStudent | null>(null);
 
+  const { setIsOverlay } = useContext(OverlayContext)
 
   const closeModal = () => {
     setOffAnimation(true);
+    setIsOverlay(false)
   }
 
   // Efeito para fechar o modal após a animação de slideDown
@@ -291,7 +294,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
       }
       
       try {
-        const response = await fetch('http://34.200.36.243/api/v1/alunos/', {
+        const response = await fetch('https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/', {
           method: 'GET',
           headers: { 
             'Authorization': `Bearer ${accessToken}`
@@ -333,7 +336,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
         }
 
         try {
-            const response = await fetch(`http://34.200.36.243/api/v1/fichasTreino/${workoutId}/`, {
+            const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/fichasTreino/${workoutId}/`, {
                 method: 'GET',
                 headers: { 
                   'Authorization': `Bearer ${accessToken}`
@@ -494,7 +497,6 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
     e.preventDefault();
     const accessToken = getAccessTokenInLocalStorage();
     
-    // Validações (mantidas)
      if (!workoutData.alunoId) {
         error("Selecione um aluno para cadastrar/atualizar o treino.");
         return;
@@ -515,8 +517,8 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
     const isEditing = !!workoutId; 
     const method = isEditing ? "PATCH" : "POST";
     const url = isEditing 
-        ? `http://34.200.36.243/api/v1/fichasTreino/${workoutId}/` 
-        : 'http://34.200.36.243/api/v1/fichasTreino/'; 
+        ? `https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/fichasTreino/${workoutId}/` 
+        : 'https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/fichasTreino/'; 
 
     const payload = {
       aluno: workoutData.alunoId, 
@@ -637,14 +639,14 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                 </div>
 
                 <StyledLabel>Nome do treino</StyledLabel>
-                <Input id='1' type='text' placeholder='Digite o nome do treino' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" value={workoutData.workoutName} onChange={(e) => handleWorkoutChange('workoutName', e.target.value)} />
+                <Input id='1' type='text' placeholder='Digite o nome do treino' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" value={workoutData.workoutName} minLength={3} maxLength={20} onChange={(e) => handleWorkoutChange('workoutName', e.target.value)} />
 
                 {/* Edição da Data Fim */}
                 <StyledLabel>Data fim</StyledLabel>
                 <Input id='2' type='date' placeholder='' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={workoutData.endDate} onChange={(e) => handleWorkoutChange('endDate', e.target.value)} />
 
                 <StyledLabel>Observações</StyledLabel>
-                <Input id='3' type='textarea' isTextarea='textarea' placeholder='Observações gerais do treino' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={workoutData.obs} onChange={(e) => handleWorkoutChange('obs', e.target.value)} />
+                <Input id='3' type='textarea' isTextarea='textarea' placeholder='Observações gerais do treino' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' maxLength={30} value={workoutData.obs} onChange={(e) => handleWorkoutChange('obs', e.target.value)} />
             </ContainerFields>
 
             {/* --- 2. ADICIONAR NOVO DIA DE TREINO --- */}
@@ -663,10 +665,10 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                 </StyledSelect>
 
                 <StyledLabel>Título Diário</StyledLabel>
-                <Input type='text' placeholder='Ex: Treino A - Peito e Tríceps' width={90} value={newDay.titulo} padding='0.5rem 0.5rem .6rem .5rem' onChange={(e) => setNewDay(prev => ({ ...prev, titulo: e.target.value }))} />
+                <Input type='text' placeholder='Ex: Treino A - Peito e Tríceps' width={90} value={newDay.titulo} padding='0.5rem 0.5rem .6rem .5rem' maxLength={20} onChange={(e) => setNewDay(prev => ({ ...prev, titulo: e.target.value }))} />
                 
                 <StyledLabel>Descrição do Dia</StyledLabel>
-                <Input type='textarea' isTextarea='textarea' placeholder='Foco em força, etc.' width={90} value={newDay.descricao} padding='0.5rem 0.5rem .6rem .5rem' onChange={(e) => setNewDay(prev => ({ ...prev, descricao: e.target.value }))} />
+                <Input type='textarea' isTextarea='textarea' placeholder='Foco em força, etc.' width={90} value={newDay.descricao} padding='0.5rem 0.5rem .6rem .5rem' maxLength={20} onChange={(e) => setNewDay(prev => ({ ...prev, descricao: e.target.value }))} />
 
                 <Button type='button' width='10rem' onClick={handleAddDailyWorkout}>Adicionar Dia</Button>
             </ContainerFields>
@@ -705,6 +707,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                         width={90} 
                         value={day.titulo} 
                         padding='0.5rem 0.5rem .6rem .5rem' 
+                        maxLength={20}
                         onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditDailyWorkout(dailyIndex, 'titulo', e.target.value)}
                     />
                     
@@ -716,6 +719,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                         width={90} 
                         value={day.descricao} 
                         padding='0.5rem 0.5rem .6rem .5rem' 
+                        maxLength={30}
                         onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditDailyWorkout(dailyIndex, 'descricao', e.target.value)}
                     />
 
@@ -734,22 +738,22 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                                 <FormRow>
                                     <div>
                                         <StyledLabel>Séries</StyledLabel>
-                                        <Input type='number' value={ex.series || ''} padding='.4rem .4rem .4rem 1rem' onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'series', e.target.value)} />
+                                        <Input type='number' value={ex.series || ''} padding='.4rem .4rem .4rem 1rem' maxLength={20} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'series', e.target.value)} />
                                     </div>
                                     <div>
                                         <StyledLabel>Repetições</StyledLabel>
-                                        <Input type='text' value={ex.repeticoes} padding='.4rem .4rem .4rem 1rem' onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'repeticoes', e.target.value)} />
+                                        <Input type='text' value={ex.repeticoes} padding='.4rem .4rem .4rem 1rem' maxLength={10} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'repeticoes', e.target.value)} />
                                     </div>
                                 </FormRow>
 
                                 <FormRow>
                                     <div>
                                         <StyledLabel>Descanso</StyledLabel>
-                                        <Input type='text' value={ex.descanso} padding='.4rem .4rem .4rem 1rem' onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'descanso', e.target.value)} />
+                                        <Input type='text' value={ex.descanso} padding='.4rem .4rem .4rem 1rem' maxLength={10} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'descanso', e.target.value)} />
                                     </div>
                                     <div>
                                         <StyledLabel>Observação</StyledLabel>
-                                        <Input type='text' value={ex.observacao} padding='.4rem .4rem .4rem 1rem' onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'observacao', e.target.value)} />
+                                        <Input type='text' maxLength={30} value={ex.observacao} padding='.4rem .4rem .4rem 1rem' onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'observacao', e.target.value)} />
                                     </div>
                                 </FormRow>
 
@@ -777,27 +781,27 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                             <h5 style={{ paddingLeft: '0.5rem', color: '#1E90FF', marginBottom: '1rem' }}>Adicionar ao {day.dia_semana}</h5>
                             
                             <StyledLabel>Nome do Exercício</StyledLabel>
-                            <Input type='text' placeholder='Ex: Supino Reto' width={90} padding='.4rem .4rem .4rem 1rem' value={newExercise.nome} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, nome: e.target.value }))} />
+                            <Input type='text' maxLength={20} placeholder='Ex: Supino Reto' width={90} padding='.4rem .4rem .4rem 1rem' value={newExercise.nome} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, nome: e.target.value }))} />
                             
                             <FormRow>
                                 <div>
                                     <StyledLabel>Séries</StyledLabel>
-                                    <Input type='number' placeholder='Ex: 3' value={newExercise.series || ''} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, series: Number(e.target.value) }))} />
+                                    <Input type='number' maxLength={10} placeholder='Ex: 3' value={newExercise.series || ''} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, series: Number(e.target.value) }))} />
                                 </div>
                                 <div>
                                     <StyledLabel>Repetições</StyledLabel>
-                                    <Input type='text' placeholder='Ex: 8-12' value={newExercise.repeticoes} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, repeticoes: e.target.value }))} />
+                                    <Input type='text' maxLength={20} placeholder='Ex: 8-12' value={newExercise.repeticoes} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, repeticoes: e.target.value }))} />
                                 </div>
                             </FormRow>
 
                             <FormRow>
                                 <div>
                                     <StyledLabel>Descanso</StyledLabel>
-                                    <Input type='text' placeholder='Ex: 60s' value={newExercise.descanso} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, descanso: e.target.value }))} />
+                                    <Input type='text' placeholder='Ex: 60s' value={newExercise.descanso} maxLength={10} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, descanso: e.target.value }))} />
                                 </div>
                                 <div>
                                     <StyledLabel>Observação</StyledLabel>
-                                    <Input type='text' placeholder='Ex: Drop-set na última' value={newExercise.observacao} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, observacao: e.target.value }))} />
+                                    <Input type='text' placeholder='Ex: Drop-set na última' value={newExercise.observacao} maxLength={30} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, observacao: e.target.value }))} />
                             </div>
                             </FormRow>
 
@@ -808,7 +812,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
             ))}
 
             <div style={{ padding: '2rem 0', width: '90%', margin: '0 auto' }}>
-                <Button width='100%'>{workoutId ? 'Salvar Alterações (PATCH)' : 'Cadastrar Ficha de Treino Completa (POST)'}</Button> 
+                <Button width='100%'>{workoutId ? 'Salvar Alterações' : 'Cadastrar Ficha de Treino Completa'}</Button> 
             </div>
         </ContainerForm>
       )}

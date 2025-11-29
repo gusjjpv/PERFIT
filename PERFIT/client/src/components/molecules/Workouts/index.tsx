@@ -1,39 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import Button from '../../atoms/Button';
 import { getAccessTokenInLocalStorage } from '../../../storage/LocalStorage';
-import type { StudentData } from '../../../types';
+import type { RecordWorkoutProps, StudentData, Workout } from '../../../types';
 import { error, success } from '../../../utils/toastfy';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-
-export interface ExercicioSchema {
-  id: number;
-  nome: string;
-  series: number;
-  repeticoes: number;
-  descanso: string;
-  observacao: string | null;
-}
-
-export interface TreinoDetalheSchema {
-  id: number;
-  ordem: number;
-  titulo: string;
-  descricao: string;
-  dia_semana: "SEG" | "TER" | "QUA" | "QUI" | "SEX" | "SAB" | "DOM";
-  exercicios: ExercicioSchema[];
-}
-
-export interface FichaTreinoSchema {
-  id: number;
-  aluno: number;
-  nome: string;
-  data_inicio: string;
-  data_fim: string;
-  ativa: boolean;
-  observacoes: string;
-  treinos: TreinoDetalheSchema[];
-}
+import { OverlayContext } from '../../../context/OverlayContext';
 
 interface WorkoutProps {
   isModalWorkout: boolean;
@@ -62,8 +34,7 @@ const Container = styled.div<StyleProps>`
   top: 10%;
   left: 50%;
   transform: translate(-50%, 0%);
-  min-width: 50%;
-  max-width: 750px;
+  min-width: 95%;
   height: 85%;
   background-image: linear-gradient(292deg, #ffffff, #e1e1e1);
   border: 1px solid #0000003d;
@@ -143,14 +114,19 @@ export default function Workouts({
   const [students, setStudents] = useState<StudentData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [studentWorkouts, setStudentWorkouts] = useState<FichaTreinoSchema[]>([]);
+  const [studentWorkouts, setStudentWorkouts] = useState<RecordWorkoutProps[]>([]);
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
 
   const [isWorkoutLoading, setIsWorkoutLoading] = useState(false);
 
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<number | null>(null);
 
-  const closeModal = () => setOffAnimation(true);
+  const { setIsOverlay } = useContext(OverlayContext)
+
+  const closeModal = () => {
+    setOffAnimation(true)
+    setIsOverlay(false)
+  }
 
   useEffect(() => {
     if (!offAnimation) return;
@@ -167,7 +143,7 @@ export default function Workouts({
       if (!token) return error("Token não encontrado.");
 
       try {
-        const res = await fetch("http://34.200.36.243/api/v1/alunos/", {
+        const res = await fetch("https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -200,7 +176,7 @@ export default function Workouts({
 
     try {
       const res = await fetch(
-        `http://34.200.36.243/api/v1/fichasTreino/`,{ 
+        `https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/fichasTreino/`,{ 
           headers: { 
             Authorization: `Bearer ${token}` 
           }}
@@ -208,7 +184,7 @@ export default function Workouts({
 
       if (!res.ok) return error("Erro ao carregar treinos.");
 
-      let data: FichaTreinoSchema[] = await res.json();
+      let data: RecordWorkoutProps[] = await res.json();
 
       if (!Array.isArray(data)) data = [data];
 
@@ -233,7 +209,7 @@ export default function Workouts({
 
     try {
       const response = await fetch(
-        `http://34.200.36.243/api/v1/fichasTreino/${id}/`, { 
+        `https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/fichasTreino/${id}/`, { 
           method: "DELETE", 
           headers: { Authorization: `Bearer ${token}` 
         }}
@@ -248,7 +224,7 @@ export default function Workouts({
     }
   }
 
-  const enableFullEdit = (w: FichaTreinoSchema) => {
+  const enableFullEdit = (w: Workout) => {
     // 1. Define o ID da ficha a ser editada no estado do componente pai
     setWorkoutIdToEdit(w.id);
     

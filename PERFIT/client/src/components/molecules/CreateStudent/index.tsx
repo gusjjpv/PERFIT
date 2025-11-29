@@ -6,6 +6,7 @@ import Input from '../../atoms/Input';
 import { getAccessTokenInLocalStorage } from '../../../storage/LocalStorage';
 import { success } from '../../../utils/toastfy';
 import { SignCreateStudentContext } from '../../../context/SignCreateStudentContext';
+import { OverlayContext } from '../../../context/OverlayContext';
 
 const slideUp = keyframes`
   from {
@@ -107,17 +108,19 @@ const StyledLabel = styled.label`
 
 
 export default function CreateStudent() {
-  const { isModal, setIsModal } = useContext(ModalContext)
   const [ offAnimation, setOffAnimation ] = useState<boolean>(false)
   const [ username, setUsername ] = useState<string>('')
   const [ password, setPassword ] = useState<string>('')
   const [ email, setEmail ] = useState<string>('')
   const [ firstName, setFirstname ] = useState<string>('')
-
+  
+  const { isModal, setIsModal } = useContext(ModalContext)
   const { setSignStudent } = useContext(SignCreateStudentContext)
+  const { setIsOverlay } = useContext(OverlayContext)
 
   const closeModal = () => {
     setOffAnimation(true)
+    setIsOverlay(false)
   }
 
   const clearForm = () => {
@@ -133,7 +136,7 @@ export default function CreateStudent() {
     const accessToken = getAccessTokenInLocalStorage()
 
     try {
-      const response = await fetch('http://34.200.36.243/api/v1/alunos/', {
+      const response = await fetch('https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/', {
         method: "POST",
         headers: { 
           "Content-Type": "application/json", 
@@ -184,18 +187,18 @@ export default function CreateStudent() {
 
       <ContainerForm onSubmit={handleCreateStudent}>
         <StyledLabel>Usuário</StyledLabel>
-        <Input id='1' type='text' placeholder='Digite o nome de usuário' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <Input id='1' type='text' placeholder='Digite o nome de usuário' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" value={username} maxLength={24} onChange={(e) => setUsername(e.target.value)} />
 
         <StyledLabel>Senha</StyledLabel>
-        <Input id='2' type='text' placeholder='Digite a senha' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={password} onChange={(e) => setPassword(e.target.value)} />
+        <Input id='2' type='text' placeholder='Digite a senha' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={password} minLength={8} maxLength={24} onChange={(e) => setPassword(e.target.value)} />
 
         <StyledLabel>Email</StyledLabel>
         <Input id='3' type='email' placeholder='Digite o email' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={email} onChange={(e) =>  setEmail(e.target.value)} />
 
         <StyledLabel>Primeiro nome</StyledLabel>
-        <Input id='4' type='text' placeholder='Digite o primeiro nome' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={firstName} onChange={(e) => setFirstname(e.target.value)} />
+        <Input id='4' type='text' placeholder='Digite o primeiro nome' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' maxLength={3} value={firstName} onChange={(e) => setFirstname(e.target.value)} />
 
-        <Button width='10rem'>Cadastrar</Button>
+        <Button type='submit' width='10rem'>Cadastrar</Button>
       </ContainerForm>
 
     </Container>

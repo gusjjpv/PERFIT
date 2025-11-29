@@ -80,7 +80,7 @@ class ProfessorAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class AlunosAPIView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated, IsProfessor]
+    permission_classes = [IsAuthenticated]
 
     filter_backends = [filters.SearchFilter]
     #campos que seram buscados
@@ -297,7 +297,7 @@ class FichaTreinoDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class FichaDeDadosAPIView(generics.RetrieveUpdateAPIView, generics.CreateAPIView):
     serializer_class = FichaDeDadosSerializer
-    permission_classes = [IsAuthenticated, IsProfessor]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         aluno_id = self.kwargs['pk'] # Pega o ID do Aluno da URL

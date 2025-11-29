@@ -7,9 +7,11 @@ import { cleanLocalStorage, getAccessTokenInLocalStorage, getRefreshTokenInLocal
 import Student from './components/organisms/Student';
 import { refreshAccessToken } from './auth/auth';
 import { setupFetchInterceptor } from './auth/fetchUser';
+import Aluno from './components/organisms/Aluno';
+import ErrorPage from './components/organisms/ErrorPage';
 
 export function AppRoutes() {
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -23,11 +25,11 @@ export function AppRoutes() {
       setUser({
         access: accessToken,
         refresh: refreshToken,
-        first_name: userData.firstname,
+        first_name: userData.first_name,
         role: userData.role,
-        detail: '',
-        user_id: 0,
-        username: ''
+        detail: userData.detail,
+        user_id: userData.user_id,
+        username: userData.username
       })
     }
 
@@ -92,15 +94,21 @@ export function AppRoutes() {
     return () => clearInterval(intervalId)
   }, [])
 
+  //cleanLocalStorage()
+
   return (
     <Routes>
       <Route path='/' element={<App />} />
       <Route path='/personal' element={user?.role === 'professor' ? <Personal /> : <App />} />
-      <Route path='/aluno' element={user?.role === 'aluno' ? <Personal /> : <App />} />
+      <Route path='/aluno' element={user?.role === 'aluno' ? <Aluno /> : <App />} />
+      {/* <Route path='/aluno' element={ <Aluno /> } /> */}
       <Route 
           path='/aluno-info/:id'
           element={user?.role === 'professor' || user?.role === 'aluno' ? <Student /> : null} 
       />
+
+      {/* Rota para qualquer rota inexistente */}
+      <Route path="*" element={<ErrorPage />} />
     </Routes>
   );
 }

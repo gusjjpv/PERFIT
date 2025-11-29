@@ -10,12 +10,14 @@ import { UserContext } from './context/UserContext'
 import type { TokenUser } from './types'
 import { AppRoutes } from './AppRoutes' 
 import { SignCreateStudentContext } from './context/SignCreateStudentContext'
+import { OverlayContext } from './context/OverlayContext'
 
 export function Router() {
   const [ loading, setLoading ] = useState<boolean>(true)
   const [ isModal, setIsModal ] = useState<boolean>(false)
   const [ user, setUser ] = useState<TokenUser | null>(null)
   const [ signStudent, setSignStudent ] = useState<boolean>(false)
+  const [ isOverlay, setIsOverlay ] = useState<boolean>(false) 
 
   return (
     <ThemeProvider theme={theme}>
@@ -23,23 +25,25 @@ export function Router() {
         <ModalContext.Provider value={{ isModal, setIsModal}}>
           <UserContext.Provider value={{ user, setUser }}>
             <SignCreateStudentContext.Provider value={{ signStudent, setSignStudent}}>
-              <ToastContainer 
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover={false}
-                theme="light"
-                transition={Bounce}
-              />
-              <GlobalStyles />
-              <BrowserRouter>
-                <AppRoutes /> 
-              </BrowserRouter>
+              <OverlayContext.Provider value={{ isOverlay, setIsOverlay }}>
+                <ToastContainer 
+                  position="top-center"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover={false}
+                  theme="light"
+                  transition={Bounce}
+                />
+                <GlobalStyles />
+                <BrowserRouter>
+                  <AppRoutes /> 
+                </BrowserRouter>
+              </OverlayContext.Provider>
             </SignCreateStudentContext.Provider>
           </UserContext.Provider>
         </ModalContext.Provider>
