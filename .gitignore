@@ -9,6 +9,7 @@ Desktop.ini
 venv/
 env/
 ENV/
+.venv
 
 # Python (Bytecode, Cache e Eggs)
 __pycache__/
@@ -27,6 +28,7 @@ media/
 staticfiles/
 *.log
 logs/
+PERFIT/academia/migrations/
 
 # Segredos e Configurações Locais
 # NUNCA envie seus segredos para o Git!

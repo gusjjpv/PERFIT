@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  nginx:
+    volumes:
+      # AQUI ESTÁ A MUDANÇA PRINCIPAL:
+      # Em vez de usar o 'local.conf' (que é HTTP simples), 
+      # forçamos o uso do 'prod.conf' (que tem os certificados SSL/HTTPS).
+      - ./nginx/prod.conf:/etc/nginx/conf.d/default.conf
+      
+      # Mantemos os volumes necessários para o Certbot funcionar
+      - static_volume:/app/PERFIT/static
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
