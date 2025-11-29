@@ -1,73 +1,97 @@
-import type { ReactNode } from 'react'
-import styled from 'styled-components'
+import type { ReactNode } from "react";
+import styled from "styled-components";
 
+/* ------------------------------------------------------
+   INTERFACE PÚBLICA — Props aceitas pelo componente
+------------------------------------------------------ */
 interface InputProps {
-  id?: string,
-  type: string,
-  placeholder?: string,
-  width?: number,
-  icon?: ReactNode,
-  disabled?: boolean,
-  padding?: string,
-  isTextarea?: string,
-  variant?: string,
-  variantPlaceholder?: string,
-  value?: string | number,
-  minLength?: number | undefined,
-  maxLength?: number | undefined,
-  onChange?:(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void, 
-  required?: boolean
+  id?: string;
+  width?: number;
+  icon?: ReactNode;
+  disabled?: boolean;
+  padding?: string;
+  isTextarea?: "textarea";
+  variant?: "primary" | "secondary" | "tertiary";
+  variantPlaceholder?: "primary" | "secondary" | "tertiary";
+
+  type?: string;
+  placeholder?: string;
+  value?: string | number;
+  minLength: number | undefined;
+  maxLength: number | undefined;
+  required: boolean;
+
+  onChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
 }
 
+/* ------------------------------------------------------
+   INTERFACE INTERNA — Apenas props pra estilização
+   NÃO vão para o DOM (por começar com $)
+------------------------------------------------------ */
 interface InputStyles {
-  $width?: number,
-  $disabled?: boolean,
-  $padding?: string,
-  $variant?: string,
-  $variantPlaceholder?: string
+  $width?: number;
+  $disabled?: boolean;
+  $padding?: string;
+  $variant?: "primary" | "secondary" | "tertiary";
+  $variantPlaceholder?: "primary" | "secondary" | "tertiary";
 }
 
+/* ------------------------------------------------------
+   WRAPPER
+------------------------------------------------------ */
 const InputWrapper = styled.div<InputStyles>`
-  position: relative; 
-  width: ${({ $width }) => $width ? `${$width}%` : '100%'};
+  position: relative;
+  width: ${({ $width }) => ($width ? `${$width}%` : "100%")};
   border: 1px solid #00000038;
   border-radius: 3px;
   box-shadow: 0px 0px 1px 0px #00000038;
-  display: flex; 
+  display: flex;
   align-items: center;
-`
+  background-color: ${({ theme }) => theme.colors.primary.white};
+`;
 
+/* ------------------------------------------------------
+   INPUT
+------------------------------------------------------ */
 const StyledInput = styled.input<InputStyles>`
-  background-color: ${({ theme, $disabled }) => $disabled ? theme.colors.primary.orange : theme.colors.primary.white};
+  background-color: ${({ theme, $disabled }) =>
+    $disabled ? theme.colors.primary.orange : theme.colors.primary.white};
+
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: ${({ $padding }) => ($padding ? $padding : ".4rem .4rem .4rem 2rem")};
+
   &::placeholder {
     color: ${({ theme, $variantPlaceholder }) => {
-      if ($variantPlaceholder) {
-        switch ($variantPlaceholder) {
-          case "primary":
-            return theme.colors.primary.white;
-          case "secondary":
-            return theme.colors.primary.orange;
-          case "tertiary":
-            return theme.colors.primary.black;
-          default:
-            return theme.colors.primary.gray;
-        }
+      switch ($variantPlaceholder) {
+        case "primary":
+          return theme.colors.primary.white;
+        case "secondary":
+          return theme.colors.primary.orange;
+        case "tertiary":
+          return theme.colors.primary.black;
+        default:
+          return theme.colors.primary.gray;
       }
-      return theme.colors.primary.gray;
     }};
     opacity: 1;
   }
-  width: 100%; 
-  border: none; 
-  outline: none;
-  padding: ${({ $padding }) => $padding ? `${$padding}` : '.4rem .4rem .4rem 2rem'};
-`
+`;
 
+/* ------------------------------------------------------
+   ÍCONE
+------------------------------------------------------ */
 const IconWrapper = styled.span<InputStyles>`
   position: absolute;
-  left: 0.5rem; 
-  top: 55%; 
+  left: 0.5rem;
+  top: 55%;
   transform: translateY(-50%);
+  font-size: 1rem;
+  pointer-events: none;
+
   color: ${({ theme, $variant, $disabled }) => {
     if ($variant) {
       switch ($variant) {
@@ -77,40 +101,50 @@ const IconWrapper = styled.span<InputStyles>`
           return theme.colors.primary.orange;
         case "tertiary":
           return $disabled ? theme.colors.primary.gray : theme.colors.primary.orange;
-        default:
-          return theme.colors.primary.gray;
       }
     }
-
     return theme.colors.primary.gray;
   }};
-  pointer-events: none; 
-  font-size: 1rem;
-`
+`;
 
-export default function Input({ id, type, placeholder, width, icon, disabled, padding, isTextarea, variant, variantPlaceholder, value, maxLength, minLength, onChange, required } : InputProps) {
+/* ------------------------------------------------------
+   COMPONENTE FINAL
+------------------------------------------------------ */
+export default function Input({
+  id,
+  width,
+  icon,
+  padding,
+  isTextarea,
+  variant,
+  variantPlaceholder,
+  disabled,
+  ...props
+}: InputProps) {
   return (
-    <InputWrapper $width={width} $disabled={disabled} $padding={padding} >
+    <InputWrapper
+      $width={width}
+      $disabled={disabled}
+      $padding={padding}
+    >
       {icon && (
-        <IconWrapper $disabled={disabled} $variant={variant}>
+        <IconWrapper
+          $disabled={disabled}
+          $variant={variant}
+        >
           {icon}
         </IconWrapper>
       )}
 
-      <StyledInput 
+      <StyledInput
         id={id}
-        as={isTextarea}
-        type={type}
-        placeholder={placeholder}
+        as={isTextarea} // textarea opcional
         disabled={disabled}
         $padding={padding}
         $variantPlaceholder={variantPlaceholder}
-        value={value}
-        onChange={onChange}
-        minLength={minLength ? minLength : undefined}
-        maxLength={maxLength ? maxLength : undefined}
-        required={required}
+        $variant={variant}
+        {...props} // type, placeholder, onChange, value, etc
       />
     </InputWrapper>
-  )
+  );
 }

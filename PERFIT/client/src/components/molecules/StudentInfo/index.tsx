@@ -190,7 +190,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
     }
 
     catchInfo()
-  }, [])
+  }, [getInfo, setGoal])
 
   return (
     <>
@@ -198,27 +198,27 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
         <ContainerForm>
           <StyledLabel>Nome</StyledLabel>
           <InputWrapper>
-              <Input id="1" type="text" placeholder="Fulano" width={90} icon={<FaUser />} disabled={disabled} variant="tertiary" value={name} onChange={(e) => setName(e.target.value)} />
+              <Input id="1" type="text" placeholder="Fulano" width={90} icon={<FaUser />} disabled={disabled} variant="tertiary" value={name} onChange={(e) => setName(e.target.value)} minLength={3} maxLength={20} required={false} />
           </InputWrapper>
 
           <StyledLabel>Idade</StyledLabel>
           <InputWrapper>
-              <Input id="2" type="number" placeholder="60" width={90} icon={<GiAges />} disabled={true} variant="tertiary" value={age} onChange={(e) => setAge(Number(e.target.value))}/>
+              <Input id="2" type="number" placeholder="60" width={90} icon={<GiAges />} disabled={true} variant="tertiary" value={age} minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setAge(Number(e.target.value))}/>
           </InputWrapper>
 
           <StyledLabel>Data de nascimento</StyledLabel>
           <InputWrapper>
-              <Input id="3" type="date" placeholder="" width={90} icon={<GiAges />} disabled={disabled} variant="tertiary" value={date} onChange={(e) => setDate(e.target.value)}/>
+              <Input id="3" type="date" placeholder="" width={90} icon={<GiAges />} disabled={disabled} variant="tertiary" value={date} minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setDate(e.target.value)}/>
           </InputWrapper>
 
           <StyledLabel>Profissão</StyledLabel>
           <InputWrapper>
-              <Input id="4" type="text" placeholder="Ex.: Professor(a)" width={90} icon={<MdWork />} disabled={disabled} variant="tertiary" value={profession} onChange={(e) => setProfession(e.target.value)}/>
+              <Input id="4" type="text" placeholder="Ex.: Professor(a)" width={90} icon={<MdWork />} disabled={disabled} variant="tertiary" value={profession} minLength={undefined} maxLength={25} required={false} onChange={(e) => setProfession(e.target.value)}/>
           </InputWrapper>
 
           <StyledLabel>Problemas de saúde</StyledLabel>
           <InputWrapper>
-              <Input id="5" type="text" placeholder="Preguiça" width={90} icon={<MdHealthAndSafety />} disabled={disabled} variant="tertiary" value={healthProblem} onChange={(e) => setHealthProblem(e.target.value)} />
+              <Input id="5" type="text" placeholder="Preguiça" width={90} icon={<MdHealthAndSafety />} disabled={disabled} variant="tertiary" value={healthProblem} minLength={undefined} maxLength={50} required={false} onChange={(e) => setHealthProblem(e.target.value)} />
           </InputWrapper>
         </ContainerForm>
 
@@ -229,7 +229,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
             <h3>Altura</h3>
             </MeajureText>
             {isEdit ? (
-              <Input id="6" type="number" placeholder="1.70cm" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setHeight(Number(e.target.value))} />
+              <Input id="6" type="number" placeholder="1.70cm" width={25} padding=".5rem 0rem 0.3rem .2rem" minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setHeight(Number(e.target.value))} />
             ) : (
               <ValueText>{height} cm</ValueText>
             )}
@@ -241,7 +241,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
             <h3>Peso</h3>
             </MeajureText>
             {isEdit ? (
-              <Input id="7" type="number" placeholder="65kg" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setWeight(Number(e.target.value))} />
+              <Input id="7" type="number" placeholder="65kg" width={25} padding=".5rem 0rem 0.3rem .2rem" minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setWeight(Number(e.target.value))} />
             ) : (
               <ValueText>{weight} kg</ValueText>
             )}
@@ -253,7 +253,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
             <h3>IMC</h3>
             </MeajureText>
             {isEdit ? (
-              <Input id="8" type="text" placeholder="22.2" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setBmi(e.target.value)} />
+              <Input id="8" type="text" placeholder="22.2" width={25} padding=".5rem 0rem 0.3rem .2rem" minLength={undefined} maxLength={undefined} required={false} disabled={true} onChange={(e) => setBmi(e.target.value)} />
             ) : (
               <ValueText>{bmi ?? '0'}</ValueText>
             )}

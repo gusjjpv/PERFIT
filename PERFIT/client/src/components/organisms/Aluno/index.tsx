@@ -22,8 +22,8 @@ const PageWrap = styled.div`
   color: #111;
 `;
 
-const CardShell = styled.div`
-  width: 95%;
+const CardShell = styled.div<{ expanded?: boolean }>`
+  width: 110%;
   max-width: 480px;
   background: rgba(255,255,255,0.98);
   border-radius: 18px;
@@ -31,6 +31,7 @@ const CardShell = styled.div`
   padding: 28px 22px;
   margin-top: 36px;
   animation: ${appear} 300ms ease;
+  min-height: ${({ expanded }) => (expanded ? "calc(100vh - 64px)" : "auto")};
 
   @media (min-width: 768px) {
     width: 70%;
@@ -39,6 +40,7 @@ const CardShell = styled.div`
     margin-top: 48px;
   }
 `;
+
 
 const Header = styled.header`
   display: flex;
@@ -82,30 +84,13 @@ const NavBack = styled.button`
   margin-bottom: 1rem;
 `;
 
-/* Small helper to render a compact record card (you can style it later) */
-const RecordList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
-`;
-
-const RecordItem = styled.div`
-  padding: 10px;
-  border-radius: 10px;
-  background: #fff;
-  border: 1px solid #e6e6e6;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
 
 export default function Aluno() {
   const { user } = useContext(UserContext);
 
-  const [workoutRecords, setWorkoutRecords] = useState<RecordWorkoutProps[]>([]);
-  const [selectedRecord, setSelectedRecord] = useState<RecordWorkoutProps | null>(null);
+  // todos os treinos de todas as fichas do aluno
+  const [allTreinos, setAllTreinos] = useState<Workout[]>([]);
+  const [treinosPorDia, setTreinosPorDia] = useState<Record<string, Workout[]>>({});
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -147,14 +132,14 @@ export default function Aluno() {
         }
 
         const data = await res.json();
-        /* console.log("API fichas recebidas:", data); */
 
-        const allRecords: RecordWorkoutProps[] = Array.isArray(data)
+        const records: RecordWorkoutProps[] = Array.isArray(data)
           ? data.filter((f: RecordWorkoutProps) => Number(f.aluno) === Number(user.user_id))
           : [];
 
-        //console.log("Fichas filtradas para o usuário:", allRecords);
-        setWorkoutRecords(allRecords);
+        // junta treinos de todas as fichas do aluno
+        const treinos = records.flatMap((rec) => rec.treinos ?? []);
+        setAllTreinos(treinos);
       } catch (err) {
         console.error("Erro ao buscar fichas:", err);
         setError("Falha de conexão com o sistema.");
@@ -167,65 +152,73 @@ export default function Aluno() {
   }, [user?.user_id]);
 
   useEffect(() => {
-    console.log("workoutRecords atualizados:", workoutRecords);
-  }, [workoutRecords]);
+    // agrupa por dia
+    const grupos: Record<string, Workout[]> = {};
+    allTreinos.forEach((t) => {
+      const dia = t.dia_semana ?? "—";
+      if (!grupos[dia]) grupos[dia] = [];
+      grupos[dia].push(t);
+    });
+
+    const order = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"];
+    const ordered: Record<string, Workout[]> = {};
+    order.forEach((d) => {
+      if (grupos[d]) ordered[d] = grupos[d];
+    });
+
+    Object.keys(grupos)
+      .filter((d) => !order.includes(d))
+      .forEach((d) => (ordered[d] = grupos[d]));
+
+    setTreinosPorDia(ordered);
+  }, [allTreinos]);
+
+  useEffect(() => {
+    console.log("treinosPorDia:", treinosPorDia);
+  }, [treinosPorDia]);
 
   return (
     <>
       <PageWrap>
-        <CardShell>
+        <CardShell expanded={!!selectedWorkout}>
           <Header>
             <Title>Olá {user?.first_name ?? "Aluno(a)"}</Title>
 
-            <ContainerNav onClick={() => { setSelectedWorkout(null); setSelectedRecord(null); }}>
-              {(selectedRecord || selectedWorkout) && (
-                <NavBack aria-label="Voltar" onClick={() => { setSelectedWorkout(null); setSelectedRecord(null); }}>
+            <ContainerNav onClick={() => { setSelectedWorkout(null); }}>
+              {selectedWorkout && (
+                <NavBack aria-label="Voltar" onClick={() => { setSelectedWorkout(null); }}>
                   <FaChevronLeft />
                 </NavBack>
               )}
-              <Subtitle>Suas fichas de treino</Subtitle>
+              <Subtitle>Seus treinos da semana</Subtitle>
             </ContainerNav>
           </Header>
 
           {loading && <p>Carregando treinos...</p>}
           {error && <p style={{ color: "crimson" }}>{error}</p>}
 
-          {!loading && !error && workoutRecords.length === 0 && (
-            <p>Você ainda não possui ficha atribuída.</p>
+          {!loading && !error && allTreinos.length === 0 && (
+            <p>Você ainda não possui treinos cadastrados.</p>
           )}
 
-          {!selectedRecord && !selectedWorkout && workoutRecords.length > 0 && (
-            <RecordList>
-              {workoutRecords.map((rec) => (
-                <RecordItem key={rec.id} onClick={() => { setSelectedRecord(rec); setSelectedWorkout(null); }}>
-                  <div>
-                    <div style={{ fontWeight: 700 }}>{rec.nome}</div>
-                    <div style={{ fontSize: 12, color: "#666" }}>
-                      Validade: {rec.data_inicio} → {rec.data_fim} • {rec.treinos?.length ?? 0} treinos
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 12, color: "#888" }}>
-                    {rec.ativa ? "Ativa" : "Inativa"}
-                  </div>
-                </RecordItem>
-              ))}
-            </RecordList>
-          )}
-
-          {selectedRecord && !selectedWorkout && (
-            <>
-              {selectedRecord.treinos && selectedRecord.treinos.length > 0 ? (
-                selectedRecord.treinos.map((t) => (
-                  <WorkoutCard key={t.id} treino={t} onClick={() => setSelectedWorkout(t)} />
-                ))
-              ) : (
-                <p>Não há treinos nesta ficha.</p>
-              )}
-            </>
-          )}
-
-          {selectedWorkout && (
+          {selectedWorkout ? (
             <WorkoutDetail treino={selectedWorkout} />
+          ) : (
+            <div>
+              {Object.keys(treinosPorDia).length === 0 ? null : Object.keys(treinosPorDia).map((dia) => (
+                <div key={dia} style={{ marginTop: "16px" }}>
+                  <h3 style={{ margin: "8px 0" }}>{dia}</h3>
+
+                  {treinosPorDia[dia].map((treino) => (
+                    <WorkoutCard
+                      key={treino.id}
+                      treino={treino}
+                      onClick={() => setSelectedWorkout(treino)}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
           )}
         </CardShell>
       </PageWrap>
