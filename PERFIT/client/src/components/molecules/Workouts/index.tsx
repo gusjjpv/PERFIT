@@ -34,7 +34,7 @@ const Container = styled.div<StyleProps>`
   top: 10%;
   left: 50%;
   transform: translate(-50%, 0%);
-  min-width: 95%;
+  width: 95%;
   height: 85%;
   background-image: linear-gradient(292deg, #ffffff, #e1e1e1);
   border: 1px solid #0000003d;
@@ -53,6 +53,10 @@ const Container = styled.div<StyleProps>`
       : $isModal
       ? css`animation: ${slideUp} 0.3s ease-out forwards;`
       : ""}
+
+  @media (min-width: 768px) {
+    max-width: 50%;
+  }
 `;
 
 const ContainerCloseModalBtn = styled.div`
@@ -92,6 +96,10 @@ const WorkoutListItem = styled.div`
 
   &:hover {
     background: #f3f3f3;
+  }
+
+  &:last-child {
+    margin-bottom: .8rem;
   }
 `;
 

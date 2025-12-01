@@ -98,6 +98,7 @@ export default function Footer() {
 
     // Função para abrir o modal de cadastro de aluno
     const openModal = () => {
+        setIsOverlay(false)
         setIsModal(true)
         setIsCreateWorkoutModalOpen(false) 
         setIsViewWorkoutsModalOpen(false) 
@@ -105,11 +106,12 @@ export default function Footer() {
 
         setTimeout(() => {
             setIsOverlay(true)
-        }, 100)
+        }, 0)
     }
 
     // Função para abrir o modal de CRIAÇÃO de treino
     const openCreateWorkoutModal = () => {
+        setIsOverlay(false)
         setIsCreateWorkoutModalOpen(true)
         setIsModal(false)
         setIsViewWorkoutsModalOpen(false) 
@@ -117,11 +119,12 @@ export default function Footer() {
 
         setTimeout(() => {
             setIsOverlay(true)
-        }, 100)
+        }, 0)
     }
 
     // Função para abrir o modal de EXIBIÇÃO de treino
     const openViewWorkoutsModal = () => {
+        setIsOverlay(false)
         setIsViewWorkoutsModalOpen(true)
         setIsModal(false)
         setIsCreateWorkoutModalOpen(false)
@@ -129,7 +132,7 @@ export default function Footer() {
 
         setTimeout(() => {
             setIsOverlay(true)
-        }, 100)
+        }, 0)
     }
 
     const navigateStudentInfo = () => {

@@ -383,7 +383,7 @@ export default function Student() {
                         onChange={(e) => setGoal(e.target.value)}
                       />
                     ) : (
-                      <p>{goal ?? 'Qual o objetivo?'}</p>
+                      <p>{goal?.trim() ? goal : "Qual o objetivo?"}</p>
                     )}
                   </TextContent>
                   {user?.role === 'professor' && (
