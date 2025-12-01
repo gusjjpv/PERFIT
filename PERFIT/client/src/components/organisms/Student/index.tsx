@@ -125,6 +125,7 @@ export default function Student() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [goal, setGoal] = useState<string>('');
   const [student, setStudent] = useState<StudentData>();
+  const [ name, setName ] = useState<string>('')
   const [ desactiveStudent, setDesactiveStudent ] = useState<boolean>(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   
@@ -136,8 +137,8 @@ export default function Student() {
   const { user } = useContext(UserContext)
   const { isOverlay } = useContext(OverlayContext)
 
-  console.log("ID:", id)
-  console.log(user)
+  //console.log("ID:", id)
+  //console.log(user)
 
   const handleSection = (newSection: string) => {
     setChosenSection(newSection);
@@ -146,6 +147,36 @@ export default function Student() {
   const toogleEdition = () => {
     setIsEdit((prev) => !prev);
   };
+
+  const updateUser = async () => {
+    const accessToken = getAccessTokenInLocalStorage()
+
+      if(name) {
+        try {
+          const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/${id}/`, {
+            method: 'PATCH',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({ user: {
+              first_name: name
+            } }),
+          });
+
+          if(response.ok) {
+            const data = await response.json()
+            setName(data.data.user.first_name)
+            //console.log('ESSE DATA:', data)
+          } else {
+            const data = await response.json()
+            console.log("Error fetching", data)
+          }
+      } catch(err) {
+        console.log("Internal error: ", err)
+      }
+    }
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -165,7 +196,8 @@ export default function Student() {
         if (response.ok) {
           const data = await response.json();
           setStudent(data);
-          console.log(data)
+          setName(data.user.first_name);
+          console.log("DATA REAL: ", data)
         } else {
           console.error("Falha ao buscar dados do aluno.");
         }
@@ -177,7 +209,7 @@ export default function Student() {
     };
 
     fetchStudentData();
-  }, [id]);
+  }, [id, setLoading]);
 
   const getInfo = async () => {
     const accessToken = getAccessTokenInLocalStorage();
@@ -324,7 +356,18 @@ export default function Student() {
                   <Avatar />
 
                   <TextContent>
-                    <h2>{student.user.first_name}</h2>
+                    {isEdit ? (
+                      <Input
+                          id="1"
+                          type="text"
+                          placeholder="Nome do aluno"
+                          value={name}
+                          padding="0.5rem 0.5rem 3rem .5rem"
+                          onChange={(e) => setName(e.target.value)} minLength={3} maxLength={20} required={false}                      />
+                    ) : (
+                      <h2>{name}</h2>
+                    )}
+
                     {isEdit ? (
                       <Input
                         id="0"
@@ -376,6 +419,7 @@ export default function Student() {
                 setIsEdit={setIsEdit}
                 disabled={!isEdit}
                 patchUser={patchStudent}
+                updateUser={updateUser}
                 getInfo={getInfo}
               />
             )}
