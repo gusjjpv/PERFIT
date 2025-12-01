@@ -33,7 +33,7 @@ export function AppRoutes() {
       })
     }
 
-    console.log(user)
+    //console.log(user)
 
   }, [setUser])
 

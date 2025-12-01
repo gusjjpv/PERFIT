@@ -69,7 +69,7 @@ ${({ $isModal, $offAnimation }) => {
 
   h2 {
     font-weight: 700;
-    padding: 1rem 0 0 0.5rem;
+    padding: 1rem 2rem 0 0.5rem;
   }
 
   @media (min-width: 768px) {
@@ -171,7 +171,7 @@ export default function CreateStudent() {
         setIsModal(false)
         setOffAnimation(false)
       }
-    }, 900)
+    }, 300)
 
     return () => clearTimeout(timer)
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -41,6 +41,20 @@ interface StudentInfoProps {
   }>
 }
 
+const FadeIn = styled.div`
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeIn .4s ease forwards;
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`
+
+
 const WrapperScroll = styled.div<StudentInfoProps>`
   max-height: calc(100vh - 300px); 
   overflow-y: auto;
@@ -53,6 +67,7 @@ const ContainerForm = styled.form`
   width: 100%;
   align-items: center;
   margin-top: 2rem;
+  transition: all .3s ease-in-out;
 `
 
 const StyledLabel = styled.label`
@@ -196,7 +211,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
   }, [getInfo, id, setGoal])
 
   return (
-    <>
+    <FadeIn>
       <WrapperScroll disabled={disabled}>
         <ContainerForm>
           <StyledLabel>Idade</StyledLabel>
@@ -268,7 +283,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
         )}
       </WrapperScroll>
         
-    </>
+    </FadeIn>
   )
 }
 
