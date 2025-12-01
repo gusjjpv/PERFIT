@@ -39,7 +39,7 @@ export function Router() {
                   theme="light"
                   transition={Bounce}
                 />
-                <GlobalStyles />
+                <GlobalStyles $overlay={false} />
                 <BrowserRouter>
                   <AppRoutes /> 
                 </BrowserRouter>
