@@ -182,7 +182,7 @@ export default function CreateStudent() {
     <Container $isModal={isModal} $offAnimation={offAnimation}>
       <h2>Cadastrar novo aluno(a)</h2>
       <ContainerCloseModalBtn>
-        <Button onClick={closeModal}>X</Button>
+        <Button width='3.5rem' onClick={closeModal}>X</Button>
       </ContainerCloseModalBtn>
 
       <ContainerForm onSubmit={handleCreateStudent}>
