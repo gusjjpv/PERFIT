@@ -122,6 +122,9 @@ export default function LoginForm({ input } : LoginFormProps) {
                   placeholder={item.placeholder} 
                   icon={item.icon} 
                   onChange={(e) => setUsername(e.target.value)} 
+                  minLength={3}
+                  maxLength={20}
+                  required
                 />
               ) : (
                 <Input 
@@ -130,6 +133,9 @@ export default function LoginForm({ input } : LoginFormProps) {
                   placeholder={item.placeholder} 
                   icon={item.icon} 
                   onChange={(e) => setPassword(e.target.value)} 
+                  minLength={8}
+                  maxLength={16}
+                  required
                 />
               )}
             </ContainerInput>

@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import Input from "../../atoms/Input";
-import { FaUser } from "react-icons/fa";
 import { GiAges } from "react-icons/gi";
 import { MdHealthAndSafety, MdWork } from "react-icons/md";
 import { GiBodyHeight } from "react-icons/gi";
@@ -8,8 +7,10 @@ import { FaWeightHanging } from "react-icons/fa";
 import { BsFillUsbMicroFill } from "react-icons/bs";
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import Button from "../../atoms/Button";
+import { useParams } from "react-router-dom";
 
 interface StudentProps {
+  name: string,
   weight: number, 
   height: number, 
   bmi: string, 
@@ -27,6 +28,7 @@ interface StudentInfoProps {
   setIsEdit?: Dispatch<SetStateAction<boolean>>,
   disabled?: boolean,
   patchUser?: (data: StudentProps) => Promise<void>,
+  updateUser?: () => Promise<void>
   getInfo?: () => Promise<{
     peso: number;
     altura: number;
@@ -42,7 +44,7 @@ interface StudentInfoProps {
 const WrapperScroll = styled.div<StudentInfoProps>`
   max-height: calc(100vh - 300px); 
   overflow-y: auto;
-  padding-bottom: 100px;
+  padding-bottom: 140px;
 `
 
 const ContainerForm = styled.form`
@@ -121,8 +123,7 @@ const ContainerBtns = styled.div`
   top: 50px;
 `
 
-export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled, patchUser, getInfo } : StudentInfoProps) {
-  const [ name, setName ] = useState<string>('')
+export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled, patchUser, updateUser, getInfo } : StudentInfoProps) {
   const [ age, setAge ] = useState<number>(0)
   const [ date, setDate ] = useState<string>('')
   const [ profession, setProfession ] = useState<string>('')
@@ -130,6 +131,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
   const [ height, setHeight ] = useState<number>(0)
   const [ weight, setWeight ] = useState<number>(0)
   const [ bmi, setBmi ] = useState<string>('0')
+  const { id } = useParams<string>();
   
 
   const handleEdit = async () => {
@@ -165,7 +167,6 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
     if(setGoal) {
       setGoal('')
     }
-    setName('')
     setAge(0)
     setHealthProblem('')
   }
@@ -174,9 +175,11 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
     const catchInfo = async () => {
       if(getInfo) {
         const data = await getInfo()
-        console.log("INFO:", data)
+        //console.log("INFO:", data)
+        //console.log(id)
 
         if(data) {
+          
           setWeight(data.peso)
           setHeight(data.altura)
           if(setGoal) setGoal(data.objetivo)
@@ -190,35 +193,30 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
     }
 
     catchInfo()
-  }, [])
+  }, [getInfo, id, setGoal])
 
   return (
     <>
       <WrapperScroll disabled={disabled}>
         <ContainerForm>
-          <StyledLabel>Nome</StyledLabel>
-          <InputWrapper>
-              <Input id="1" type="text" placeholder="Fulano" width={90} icon={<FaUser />} disabled={disabled} variant="tertiary" value={name} onChange={(e) => setName(e.target.value)} />
-          </InputWrapper>
-
           <StyledLabel>Idade</StyledLabel>
           <InputWrapper>
-              <Input id="2" type="number" placeholder="60" width={90} icon={<GiAges />} disabled={true} variant="tertiary" value={age} onChange={(e) => setAge(Number(e.target.value))}/>
+              <Input id="2" type="number" placeholder="60" width={90} icon={<GiAges />} disabled={true} variant="tertiary" value={age} minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setAge(Number(e.target.value))}/>
           </InputWrapper>
 
           <StyledLabel>Data de nascimento</StyledLabel>
           <InputWrapper>
-              <Input id="3" type="date" placeholder="" width={90} icon={<GiAges />} disabled={disabled} variant="tertiary" value={date} onChange={(e) => setDate(e.target.value)}/>
+              <Input id="3" type="date" placeholder="" width={90} icon={<GiAges />} disabled={disabled} variant="tertiary" value={date} minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setDate(e.target.value)}/>
           </InputWrapper>
 
           <StyledLabel>Profissão</StyledLabel>
           <InputWrapper>
-              <Input id="4" type="text" placeholder="Ex.: Professor(a)" width={90} icon={<MdWork />} disabled={disabled} variant="tertiary" value={profession} onChange={(e) => setProfession(e.target.value)}/>
+              <Input id="4" type="text" placeholder="Ex.: Professor(a)" width={90} icon={<MdWork />} disabled={disabled} variant="tertiary" value={profession} minLength={undefined} maxLength={25} required={false} onChange={(e) => setProfession(e.target.value)}/>
           </InputWrapper>
 
           <StyledLabel>Problemas de saúde</StyledLabel>
           <InputWrapper>
-              <Input id="5" type="text" placeholder="Preguiça" width={90} icon={<MdHealthAndSafety />} disabled={disabled} variant="tertiary" value={healthProblem} onChange={(e) => setHealthProblem(e.target.value)} />
+              <Input id="5" type="text" placeholder="Preguiça" width={90} icon={<MdHealthAndSafety />} disabled={disabled} variant="tertiary" value={healthProblem} minLength={undefined} maxLength={50} required={false} onChange={(e) => setHealthProblem(e.target.value)} />
           </InputWrapper>
         </ContainerForm>
 
@@ -229,7 +227,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
             <h3>Altura</h3>
             </MeajureText>
             {isEdit ? (
-              <Input id="6" type="number" placeholder="1.70cm" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setHeight(Number(e.target.value))} />
+              <Input id="6" type="number" placeholder="1.70cm" width={25} padding=".5rem 0rem 0.3rem .2rem" minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setHeight(Number(e.target.value))} />
             ) : (
               <ValueText>{height} cm</ValueText>
             )}
@@ -241,7 +239,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
             <h3>Peso</h3>
             </MeajureText>
             {isEdit ? (
-              <Input id="7" type="number" placeholder="65kg" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setWeight(Number(e.target.value))} />
+              <Input id="7" type="number" placeholder="65kg" width={25} padding=".5rem 0rem 0.3rem .2rem" minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setWeight(Number(e.target.value))} />
             ) : (
               <ValueText>{weight} kg</ValueText>
             )}
@@ -253,7 +251,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
             <h3>IMC</h3>
             </MeajureText>
             {isEdit ? (
-              <Input id="8" type="text" placeholder="22.2" width={25} padding=".5rem 0rem 0.3rem .2rem" onChange={(e) => setBmi(e.target.value)} />
+              <Input id="8" type="text" placeholder="22.2" width={25} padding=".5rem 0rem 0.3rem .2rem" minLength={undefined} maxLength={undefined} required={false} disabled={true} onChange={(e) => setBmi(e.target.value)} />
             ) : (
               <ValueText>{bmi ?? '0'}</ValueText>
             )}
@@ -261,7 +259,10 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
 
         {isEdit && (
           <ContainerBtns>
-            <Button onClick={handleEdit} gradient={true}>Salvar</Button>
+            <Button onClick={ async () => {
+              await handleEdit()
+              if(updateUser) await updateUser()
+            }} gradient={true}>Salvar</Button>
             <Button onClick={closeEdition} color="primary">Cancelar</Button>
           </ContainerBtns>
         )}
