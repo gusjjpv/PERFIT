@@ -232,6 +232,12 @@ const StudentItem = styled.div`
   }
 `;
 
+const ButtonContainer = styled.div`
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+`
+
 
 export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, workoutId } : WorkoutProps) {
   const [offAnimation, setOffAnimation] = useState<boolean>(false);
@@ -605,7 +611,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
             <h3 style={{color: '#1E90FF', borderBottom: '1px solid #ddd', paddingBottom: '0.5rem', marginTop: '0'}}>
                 Selecione o Aluno
             </h3>
-            <div style={{ maxHeight: 'calc(100% - 4rem)', overflowY: 'auto' }}>
+            <div style={{ maxHeight: 'calc(100% - 4rem)', overflowY: 'auto', position: 'relative'}}>
                 {isStudentsLoading ? ( 
                     <p>Carregando alunos...</p>
                 ) : students.length === 0 ? (
@@ -624,9 +630,11 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                     })
                 )}
             </div>
-            <Button onClick={() => setIsStudentModalOpen(false)}>
-                Fechar
-            </Button>
+            <ButtonContainer>
+              <Button onClick={() => setIsStudentModalOpen(false)}>
+                  Fechar
+              </Button>
+            </ButtonContainer>
         </StudentModal>
       )}
 
