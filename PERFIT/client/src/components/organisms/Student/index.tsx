@@ -66,6 +66,7 @@ const TextContent = styled.div`
   flex-direction: column; 
   flex-grow: 1;
   min-width: 0; 
+  gap: .5rem;
   
   h2 {
     font-size: 1.5rem;
@@ -118,6 +119,14 @@ const ContainerBtns = styled.div`
   gap: 1.5rem;
   margin-top: 2rem;
 `;
+
+const WarmingSoon = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+`
 
 
 export default function Student() {
@@ -425,18 +434,18 @@ export default function Student() {
             )}
 
             {chosenSection === 'a.v.' && (
-              <div style={{ padding: '1rem', fontSize: '2rem'}}>Em breve... </div>
+              <WarmingSoon>Em breve...</WarmingSoon>
             )}
 
             {chosenSection === 'config' && (
               <ContainerBtns>
                 {user?.role === 'professor' ? (
                   <>
-                    <Button width="10rem" onClick={() => setOpenDeleteModal(true)}>
+                    <Button color="primary" width="10rem" onClick={() => setOpenDeleteModal(true)}>
                       Excluir
                     </Button>
 
-                    <Button onClick={handleDesactiveStudent} width="10rem">
+                    <Button gradient={true} onClick={handleDesactiveStudent} width="10rem">
                       {desactiveStudent ? 'Desativado' : 'Ativo'}
                   </Button>
                   </>

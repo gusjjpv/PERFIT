@@ -142,7 +142,7 @@ export default function LoginForm({ input } : LoginFormProps) {
           </React.Fragment>
         ))}
         
-        <Button width='10rem' gradient={true}>
+        <Button padding={.7} width='10rem' gradient={true}>
           Entrar
         </Button>
       </ContainerForm>

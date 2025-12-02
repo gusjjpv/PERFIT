@@ -11,7 +11,12 @@ export const Container = styled.div<ContainerStyleConfig>`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: ${({ $overlay }) => $overlay ? '#ffffff5b' : '#ffffff'};
+background: 
+  linear-gradient(135deg, rgba(255, 69, 0, 0.07) 0%, rgba(121, 182, 103, 0.08) 40%, transparent 100%),
+  #ffffffff;
+
+
+
   border: 1px solid black;
   border-radius: 10px;
   padding: 2.5rem 0;

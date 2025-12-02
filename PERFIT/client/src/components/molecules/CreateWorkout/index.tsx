@@ -95,10 +95,12 @@ const Container = styled.div<CreateStudentStyleProps>`
   left: 50%;    
   transform: translate(-50%, 0%); 
   width: 95%;
-  background-image: linear-gradient(292deg, #ffffff, #e1e1e1);
-  border: 1px solid #0000003d;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
   z-index: 10;
   padding-bottom: 2rem;
 
@@ -128,7 +130,7 @@ ${({ $isModal, $offAnimation }) => {
     padding-left: 0.5rem;
     margin-top: 1.5rem;
     margin-bottom: 1rem;
-    color: #1E90FF;
+    color: black;
   }
 
   @media (min-width: 768px) {
@@ -150,7 +152,7 @@ const ContainerForm = styled.form`
   margin-top: 1rem;
 
   div {
-    margin-bottom: .5rem;
+    //margin-bottom: .5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -161,7 +163,7 @@ const ContainerFields = styled.div`
   width: 90%;
   margin: 0 auto;
   padding: 1rem 0;
-  border: 1px solid #ccc;
+  border: 1px solid #00000030;
   border-radius: 5px;
   margin-bottom: 1rem;
 `
@@ -173,13 +175,14 @@ const ContainerDailyWorkout = styled(ContainerFields)`
   
   h4 {
     margin-bottom: 0.5rem;
-    color: #32CD32;
+    color: black;
     padding-left: 0.5rem;
   }
 `
 
 const StyledLabel = styled.label`
-  background-image: linear-gradient(to bottom, #1E90FF, #32CD32);
+  //background-image: linear-gradient(to bottom, #1E90FF, #32CD32);
+  background-color: blue;
   -webkit-background-clip: text; 
   background-clip: text;
   font-weight: 700;
@@ -198,7 +201,7 @@ const FormRow = styled.div`
   display: flex;
   justify-content: space-between;
   width: 90%;
-  margin: 0 auto 1.2rem auto;
+  //margin: 0 auto 1.2rem auto;
 
   & > * {
     width: 100%; 
@@ -640,7 +643,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
 
       <h2>{workoutId ? 'Editar Ficha de Treino' : 'Cadastrar Novo Treino'}</h2>
       <ContainerCloseModalBtn>
-        <Button onClick={closeModal}>X</Button>
+        <Button color='primary' onClick={closeModal}>X</Button>
       </ContainerCloseModalBtn>
 
       {!isWorkoutLoading && (
@@ -657,28 +660,28 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                     </p>
                     
                     {selectedStudent ? (
-                        <Button type='button' width='5rem' onClick={handleRemoveStudent}>Remover</Button>
+                        <Button type='button' width='5.5rem' onClick={handleRemoveStudent}>Remover</Button>
                     ) : (
-                        <Button type='button' width='5rem' onClick={() => setIsStudentModalOpen(true)}>Buscar</Button> 
+                        <Button type='button' onClick={() => setIsStudentModalOpen(true)}>Buscar</Button> 
                     )}
                 </div>
 
                 <StyledLabel>Nome do treino</StyledLabel>
-                <Input id='1' type='text' placeholder='Digite o nome do treino' width={90} variantPlaceholder='tertiary' padding="0.5rem 0.5rem .6rem .5rem" value={workoutData.workoutName} minLength={5} maxLength={30} required={true} onChange={(e) => handleWorkoutChange('workoutName', e.target.value)} />
+                <Input id='1' type='text' placeholder='Digite o nome do treino' width={90} variantPlaceholder='tertiary' marginBottom={1.8} padding="0.5rem 0.5rem .6rem .5rem" value={workoutData.workoutName} minLength={5} maxLength={30} required={true} onChange={(e) => handleWorkoutChange('workoutName', e.target.value)} />
 
                 {/* Edição da Data Fim */}
                 <StyledLabel>Data fim</StyledLabel>
-                <Input id='2' type='date' placeholder='' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={workoutData.endDate} minLength={undefined} maxLength={undefined} required={true} onChange={(e) => handleWorkoutChange('endDate', e.target.value)} />
+                <Input id='2' type='date' placeholder='' width={90} marginBottom={1.8} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={workoutData.endDate} minLength={undefined} maxLength={undefined} required={true} onChange={(e) => handleWorkoutChange('endDate', e.target.value)} />
 
                 <StyledLabel>Observações</StyledLabel>
-                <Input id='3' type='textarea' isTextarea='textarea' placeholder='Observações gerais do treino' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={workoutData.obs} minLength={undefined} maxLength={100} required={false} onChange={(e) => handleWorkoutChange('obs', e.target.value)} />
+                <Input id='3' type='textarea' isTextarea='textarea' placeholder='Observações gerais do treino' width={90} marginBottom={1.8} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' value={workoutData.obs} minLength={undefined} maxLength={100} required={false} onChange={(e) => handleWorkoutChange('obs', e.target.value)} />
             </ContainerFields>
 
             {/* --- 2. ADICIONAR NOVO DIA DE TREINO --- */}
             <h3>Novo Dia de Treino</h3>
             <ContainerFields>
                 <StyledLabel>Dia da Semana</StyledLabel>
-                <StyledSelect value={newDay.dia_semana} onChange={(e) => setNewDay(prev => ({ ...prev, dia_semana: e.target.value }))}>
+                <StyledSelect style={{marginBottom: '1.8rem'}} value={newDay.dia_semana} onChange={(e) => setNewDay(prev => ({ ...prev, dia_semana: e.target.value }))}>
                     <option value="">Selecione o Dia</option>
                     <option value="SEG">Segunda-feira</option>
                     <option value="TER">Terça-feira</option>
@@ -690,10 +693,10 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                 </StyledSelect>
 
                 <StyledLabel>Título Diário</StyledLabel>
-                <Input type='text' placeholder='Ex: Treino A - Peito e Tríceps' width={90} value={newDay.titulo} padding='0.5rem 0.5rem .6rem .5rem' minLength={undefined} maxLength={20} required={false} onChange={(e) => setNewDay(prev => ({ ...prev, titulo: e.target.value }))} />
+                <Input type='text' placeholder='Ex: Treino A - Peito e Tríceps' width={90} value={newDay.titulo} marginBottom={1.8} padding='0.5rem 0.5rem .6rem .5rem' minLength={undefined} maxLength={20} required={false} onChange={(e) => setNewDay(prev => ({ ...prev, titulo: e.target.value }))} />
                 
                 <StyledLabel>Descrição do Dia</StyledLabel>
-                <Input type='textarea' isTextarea='textarea' placeholder='Foco em força, etc.' width={90} value={newDay.descricao} padding='0.5rem 0.5rem .6rem .5rem' minLength={undefined} maxLength={20} required={false} onChange={(e) => setNewDay(prev => ({ ...prev, descricao: e.target.value }))} />
+                <Input type='textarea' isTextarea='textarea' placeholder='Foco em força, etc.' width={90} value={newDay.descricao} marginBottom={1.8} padding='0.5rem 0.5rem .6rem .5rem' minLength={undefined} maxLength={20} required={false} onChange={(e) => setNewDay(prev => ({ ...prev, descricao: e.target.value }))} />
 
                 <Button type='button' width='10rem' onClick={handleAddDailyWorkout}>Adicionar Dia</Button>
             </ContainerFields>
@@ -710,7 +713,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                         {day.ordem}º - Treino {day.dia_semana}
                     </h4>
 
-                    <StyledLabel style={{ width: '95%' }}>Dia da Semana</StyledLabel>
+                    <StyledLabel style={{ width: '95%',  }}>Dia da Semana</StyledLabel>
                     <StyledSelect 
                         value={day.dia_semana} 
                         onChange={(e) => handleEditDailyWorkout(dailyIndex, 'dia_semana', e.target.value)}
@@ -725,12 +728,13 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                         <option value="DOM">Domingo</option>
                     </StyledSelect>
                     
-                    <StyledLabel style={{ width: '95%' }}>Título Diário</StyledLabel>
+                    <StyledLabel style={{ marginTop: '1rem' }}>Título Diário</StyledLabel>
                     <Input 
                         type='text' 
                         placeholder='Ex: Treino A' 
                         width={90} 
                         value={day.titulo} 
+                        marginBottom={1.8}
                         padding='0.5rem 0.5rem .6rem .5rem' 
                         minLength={undefined} 
                         maxLength={20}
@@ -738,13 +742,14 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                         onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditDailyWorkout(dailyIndex, 'titulo', e.target.value)}
                     />
                     
-                    <StyledLabel style={{ width: '95%' }}>Descrição</StyledLabel>
+                    <StyledLabel>Descrição</StyledLabel>
                     <Input 
                         type='textarea' 
                         isTextarea='textarea' 
                         placeholder='Foco em força, etc.' 
                         width={90} 
                         value={day.descricao} 
+                        marginBottom={1.8}
                         padding='0.5rem 0.5rem .6rem .5rem' 
                         minLength={undefined} 
                         maxLength={30} 
@@ -753,7 +758,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                     />
 
                     {/* Lista de Exercícios para este dia (Editável) */}
-                    <h5 style={{ paddingLeft: '0.5rem', color: '#1E90FF', marginTop: '1.5rem', borderTop: '1px dotted #ccc', paddingTop: '1rem' }}>Exercícios ({day.exercicios.length}):</h5>
+                    <h5 style={{ paddingLeft: '0.5rem', color: 'blue', marginTop: '1.5rem', borderTop: '1px dotted #ccc', paddingTop: '1rem' }}>Exercícios ({day.exercicios.length}):</h5>
                     {day.exercicios.length === 0 ? (
                         <p style={{ paddingLeft: '0.5rem', fontSize: '0.9rem' }}>Nenhum exercício adicionado.</p>
                     ) : (
@@ -763,29 +768,29 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                                 
                                 <FormRow>
                                   <StyledLabel>Nome do Exercício</StyledLabel>
-                                  <Input type='text' width={90} value={ex.nome} padding='.4rem .4rem .4rem 1rem' minLength={undefined} maxLength={30} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'nome', e.target.value)} />
+                                  <Input type='text' width={90} value={ex.nome} marginBottom={1.8} padding='.4rem .4rem .4rem 1rem' minLength={undefined} maxLength={30} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'nome', e.target.value)} />
                                 
                                 </FormRow>
                                 
                                 <FormRow>
                                     <div>
                                         <StyledLabel>Séries</StyledLabel>
-                                        <Input type='number' width={90} value={ex.series || ''} padding='.4rem .4rem .4rem 1rem' minLength={undefined} maxLength={20} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'series', e.target.value)} />
+                                        <Input type='number' width={90} value={ex.series || ''} padding='.4rem .4rem .4rem 1rem' marginBottom={1.8} minLength={undefined} maxLength={20} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'series', e.target.value)} />
                                     </div>
                                     <div>
                                         <StyledLabel>Repetições</StyledLabel>
-                                        <Input type='text' width={90} value={ex.repeticoes} padding='.4rem .4rem .4rem 1rem' minLength={undefined} maxLength={10} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'repeticoes', e.target.value)} />
+                                        <Input type='text' width={90} value={ex.repeticoes} padding='.4rem .4rem .4rem 1rem' marginBottom={1.8} minLength={undefined} maxLength={10} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'repeticoes', e.target.value)} />
                                     </div>
                                 </FormRow>
 
                                 <FormRow>
                                     <div>
                                         <StyledLabel>Descanso</StyledLabel>
-                                        <Input type='text' width={90} value={ex.descanso} padding='.4rem .4rem .4rem 1rem' minLength={undefined} maxLength={10} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'descanso', e.target.value)} />
+                                        <Input type='text' width={90} value={ex.descanso} padding='.4rem .4rem .4rem 1rem' marginBottom={1.8} minLength={undefined} maxLength={10} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'descanso', e.target.value)} />
                                     </div>
                                     <div>
                                         <StyledLabel>Observação</StyledLabel>
-                                        <Input type='text' width={90} minLength={undefined} maxLength={100} required={false} value={ex.observacao} padding='.4rem .4rem .4rem 1rem' onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'observacao', e.target.value)} />
+                                        <Input type='text' width={90} minLength={undefined} maxLength={100} required={false} marginBottom={1.8} value={ex.observacao} padding='.4rem .4rem .4rem 1rem' onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleEditExercise(dailyIndex, exIndex, 'observacao', e.target.value)} />
                                     </div>
                                 </FormRow>
 
@@ -813,26 +818,26 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
                             <h4 style={{ paddingLeft: '0.5rem', color: '#1E90FF', marginBottom: '1rem' }}>Adicionar a {day.dia_semana}</h4>
                             
                             <StyledLabel>Nome do Exercício</StyledLabel>
-                            <Input type='text' width={90} minLength={undefined} maxLength={20} required={false} placeholder='Ex: Supino Reto' width={90} padding='.4rem .4rem .4rem 1rem' value={newExercise.nome} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, nome: e.target.value }))} />
+                            <Input type='text' width={90} minLength={undefined} maxLength={20} required={false} placeholder='Ex: Supino Reto' marginBottom={1.8} padding='.4rem .4rem .4rem 1rem' value={newExercise.nome} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, nome: e.target.value }))} />
                             
                             <FormRow>
                               
                               <StyledLabel>Séries</StyledLabel>
-                              <Input type='number' width={90} padding='.4rem .4rem .4rem 1rem' minLength={undefined} maxLength={20} required={false} placeholder='Ex: 3' value={newExercise.series || ''} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, series: Number(e.target.value) }))} />
+                              <Input type='number' width={90} padding='.4rem .4rem .4rem 1rem' minLength={undefined} marginBottom={1.8} maxLength={20} required={false} placeholder='Ex: 3' value={newExercise.series || ''} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, series: Number(e.target.value) }))} />
                           
                           
                               <StyledLabel>Repetições</StyledLabel>
-                              <Input type='text' width={90} padding='.4rem .4rem .4rem 1rem' minLength={undefined} maxLength={20} required={false} placeholder='Ex: 8-12' value={newExercise.repeticoes} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, repeticoes: e.target.value }))} />
+                              <Input type='text' width={90} padding='.4rem .4rem .4rem 1rem' minLength={undefined} marginBottom={1.8} maxLength={20} required={false} placeholder='Ex: 8-12' value={newExercise.repeticoes} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, repeticoes: e.target.value }))} />
                                 
                             </FormRow>
 
                             <FormRow>
                             
                               <StyledLabel>Descanso</StyledLabel>
-                              <Input type='text' width={90} padding='.4rem .4rem .4rem 1rem' placeholder='Ex: 60s' value={newExercise.descanso} minLength={undefined} maxLength={20} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, descanso: e.target.value }))} />
+                              <Input type='text' width={90} padding='.4rem .4rem .4rem 1rem' placeholder='Ex: 60s' marginBottom={1.8} value={newExercise.descanso} minLength={undefined} maxLength={20} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, descanso: e.target.value }))} />
                           
                               <StyledLabel>Observação</StyledLabel>
-                              <Input type='textarea' width={90} isTextarea='textarea' padding='.4rem .4rem .4rem 1rem' placeholder='Ex: Drop-set na última' value={newExercise.observacao} minLength={undefined} maxLength={100} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, observacao: e.target.value }))} />
+                              <Input type='textarea' width={90} isTextarea='textarea' padding='.4rem .4rem .4rem 1rem' marginBottom={1.8} placeholder='Ex: Drop-set na última' value={newExercise.observacao} minLength={undefined} maxLength={100} required={false} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setNewExercise(prev => ({ ...prev, observacao: e.target.value }))} />
                             
                             </FormRow>
 
@@ -843,7 +848,7 @@ export default function CreateWorkout({ isModalWorkout, setIsModalWorkout, worko
             ))}
 
             <div style={{ padding: '2rem 0', width: '90%', margin: '0 auto' }}>
-                <Button width='100%'>{workoutId ? 'Salvar Alterações' : 'Cadastrar Ficha de Treino Completa'}</Button> 
+                <Button gradient={!workoutId} padding={.8} width='100%'>{workoutId ? 'Salvar Alterações' : 'Cadastrar ficha de treino'}</Button> 
             </div>
         </ContainerForm>
       )}

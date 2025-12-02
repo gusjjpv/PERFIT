@@ -1,120 +1,120 @@
 import type { ReactNode } from "react";
 import styled from "styled-components";
 
-/* ------------------------------------------------------
-   INTERFACE PÚBLICA — Props aceitas pelo componente
------------------------------------------------------- */
 interface InputProps {
   id?: string;
   width?: number;
-  icon?: ReactNode;
+  icon?: ReactNode; 
   disabled?: boolean;
   padding?: string;
   isTextarea?: "textarea";
   variant?: "primary" | "secondary" | "tertiary";
   variantPlaceholder?: "primary" | "secondary" | "tertiary";
+  marginBottom?: number;
 
   type?: string;
   placeholder?: string;
   value?: string | number;
-  minLength: number | undefined;
-  maxLength: number | undefined;
-  required: boolean;
+  minLength?: number;
+  maxLength?: number;
+  required?: boolean;
 
   onChange?: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
 }
 
-/* ------------------------------------------------------
-   INTERFACE INTERNA — Apenas props pra estilização
-   NÃO vão para o DOM (por começar com $)
------------------------------------------------------- */
 interface InputStyles {
   $width?: number;
   $disabled?: boolean;
   $padding?: string;
+  $marginBottom?: number;
   $variant?: "primary" | "secondary" | "tertiary";
   $variantPlaceholder?: "primary" | "secondary" | "tertiary";
 }
 
-/* ------------------------------------------------------
-   WRAPPER
------------------------------------------------------- */
 const InputWrapper = styled.div<InputStyles>`
   position: relative;
   width: ${({ $width }) => ($width ? `${$width}%` : "100%")};
-  border: 1px solid #00000038;
-  border-radius: 3px;
-  box-shadow: 0px 0px 1px 0px #00000038;
+  border-radius: 10px;
+  padding: 2px;
+  background-color: ${({ theme }) => theme.colors.primary.white};
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
-  background-color: ${({ theme }) => theme.colors.primary.white};
+  margin-bottom: ${({ $marginBottom }) => $marginBottom ? `${$marginBottom}rem` : '0'};
+  transition: box-shadow .2s ease;
+
+  &:focus-within {
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary.green}40;
+  }
 `;
 
-/* ------------------------------------------------------
-   INPUT
------------------------------------------------------- */
 const StyledInput = styled.input<InputStyles>`
   background-color: ${({ theme, $disabled }) =>
-    $disabled ? theme.colors.primary.orange : theme.colors.primary.white};
+    $disabled ? theme.colors.primary.gray + "20" : theme.colors.primary.white};
 
   width: 100%;
+  height: 48px;
   border: none;
   outline: none;
-  padding: ${({ $padding }) => ($padding ? $padding : ".4rem .4rem .4rem 2rem")};
+  padding: ${({ $padding }) => ($padding ? $padding : "0.75rem 0.75rem 0.75rem 2.6rem")};
+
+  border-radius: 10px;
+
+  font-size: 1rem;
+
+  transition: background-color .3s ease;
 
   &::placeholder {
     color: ${({ theme, $variantPlaceholder }) => {
       switch ($variantPlaceholder) {
         case "primary":
-          return theme.colors.primary.white;
+          return theme.colors.primary.black + "90";
         case "secondary":
           return theme.colors.primary.orange;
         case "tertiary":
-          return theme.colors.primary.black;
-        default:
           return theme.colors.primary.gray;
+        default:
+          return theme.colors.primary.gray + "80";
       }
     }};
-    opacity: 1;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
   }
 `;
 
-/* ------------------------------------------------------
-   ÍCONE
------------------------------------------------------- */
 const IconWrapper = styled.span<InputStyles>`
   position: absolute;
-  left: 0.5rem;
-  top: 55%;
+  left: 0.8rem;
+  top: 50%;
   transform: translateY(-50%);
-  font-size: 1rem;
-  pointer-events: none;
+  font-size: 1.25rem;
 
   color: ${({ theme, $variant, $disabled }) => {
-    if ($variant) {
-      switch ($variant) {
-        case "primary":
-          return theme.colors.primary.white;
-        case "secondary":
-          return theme.colors.primary.orange;
-        case "tertiary":
-          return $disabled ? theme.colors.primary.gray : theme.colors.primary.orange;
-      }
+    if ($disabled) return theme.colors.primary.gray + "80";
+
+    switch ($variant) {
+      case "primary":
+        return theme.colors.primary.orange;
+      case "secondary":
+        return theme.colors.primary.blue;
+      case "tertiary":
+        return theme.colors.primary.black;
+      default:
+        return theme.colors.primary.gray;
     }
-    return theme.colors.primary.gray;
   }};
 `;
 
-/* ------------------------------------------------------
-   COMPONENTE FINAL
------------------------------------------------------- */
 export default function Input({
   id,
   width,
   icon,
   padding,
+  marginBottom,
   isTextarea,
   variant,
   variantPlaceholder,
@@ -126,6 +126,7 @@ export default function Input({
       $width={width}
       $disabled={disabled}
       $padding={padding}
+      $marginBottom={marginBottom}
     >
       {icon && (
         <IconWrapper
@@ -133,17 +134,17 @@ export default function Input({
           $variant={variant}
         >
           {icon}
-        </IconWrapper>
+        </IconWrapper> 
       )}
 
       <StyledInput
         id={id}
-        as={isTextarea} // textarea opcional
+        as={isTextarea}
         disabled={disabled}
         $padding={padding}
         $variantPlaceholder={variantPlaceholder}
         $variant={variant}
-        {...props} // type, placeholder, onChange, value, etc
+        {...props}
       />
     </InputWrapper>
   );

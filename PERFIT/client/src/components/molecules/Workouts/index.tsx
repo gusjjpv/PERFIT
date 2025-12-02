@@ -36,9 +36,12 @@ const Container = styled.div<StyleProps>`
   transform: translate(-50%, 0%);
   width: 95%;
   height: 85%;
-  background-image: linear-gradient(292deg, #ffffff, #e1e1e1);
-  border: 1px solid #0000003d;
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
   padding: 1rem;
   z-index: 20;
   overflow-y: auto;
@@ -104,7 +107,8 @@ const WorkoutListItem = styled.div`
 `;
 
 const WorkoutDetails = styled.div`
-  margin-top: 0.5rem;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
   padding: 1rem;
   background: #f9f9f9;
   border-left: 3px solid #1e90ff;
@@ -248,7 +252,7 @@ export default function Workouts({
       <h2>Fichas</h2>
 
       <ContainerCloseModalBtn>
-        <Button onClick={closeModal}>X</Button>
+        <Button color='primary' onClick={closeModal}>X</Button>
       </ContainerCloseModalBtn>
 
       {isLoading ? (
@@ -370,6 +374,7 @@ export default function Workouts({
                                     <FaEdit />
                                   </Button>
                                   <Button
+                                    color='primary'
                                     onClick={() =>
                                       deleteWorkout(w.id, w.nome)
                                     }

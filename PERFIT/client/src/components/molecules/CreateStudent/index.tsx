@@ -26,7 +26,7 @@ const slideDown = keyframes`
   }
   to {
     transform: translate(-50%, 100vh); 
-    opacity: 0;
+    opacity: 0; 
   }
 `;
 
@@ -37,17 +37,19 @@ interface CreateStudentStyleProps {
 
 const Container = styled.div<CreateStudentStyleProps>`
   position: fixed; 
-  height: 80%;   
+  height: 90%;   
   overflow-y: auto; 
   will-change: transform;
-  top: 20%; 
+  top: 12%; 
   left: 50%;    
   transform: translate(-50%, -50%); 
   width: 95%;
-  background-image: linear-gradient(292deg, #ffffff, #e1e1e1);
-  border: 1px solid #0000003d;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
   z-index: 10;
 ${({ $isModal, $offAnimation }) => {
   if ($offAnimation) {
@@ -96,8 +98,9 @@ const ContainerForm = styled.form`
 `
 
 const StyledLabel = styled.label`
-  background-image: linear-gradient(to bottom, #1E90FF, #32CD32);
-  -webkit-background-clip: text; 
+  //background-image: linear-gradient(to bottom, #1E90FF, #32CD32);
+  background-color: blue;
+  //-webkit-background-clip: text; 
   background-clip: text;
   font-weight: 700;
   color: transparent;
@@ -182,7 +185,7 @@ export default function CreateStudent() {
     <Container $isModal={isModal} $offAnimation={offAnimation}>
       <h2>Cadastrar novo aluno(a)</h2>
       <ContainerCloseModalBtn>
-        <Button width='3.5rem' onClick={closeModal}>X</Button>
+        <Button color='primary' width='3.5rem' onClick={closeModal}>X</Button>
       </ContainerCloseModalBtn>
 
       <ContainerForm onSubmit={handleCreateStudent}>
@@ -198,7 +201,7 @@ export default function CreateStudent() {
         <StyledLabel>Primeiro nome</StyledLabel>
         <Input id='4' type='text' placeholder='Digite o primeiro nome' width={90} padding="0.5rem 0.5rem .6rem .5rem" variantPlaceholder='tertiary' minLength={undefined} maxLength={20} required={false} value={firstName} onChange={(e) => setFirstname(e.target.value)} />
 
-        <Button type='submit' width='10rem'>Cadastrar</Button>
+        <Button gradient={true} type='submit' padding={.8} width='10rem'>Cadastrar</Button>
       </ContainerForm>
 
     </Container>

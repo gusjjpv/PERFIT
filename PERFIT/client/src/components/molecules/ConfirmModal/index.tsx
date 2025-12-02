@@ -16,7 +16,12 @@ const Overlay = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  background: #fff;
+  background: rgba(255, 255, 255, 0.664);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
   padding: 2rem;
   border-radius: 12px;
   width: 90%;
@@ -75,7 +80,7 @@ export default function ConfirmModal({ title, text, strongText, endText, setStat
         </ModalText>
 
         <ModalButtons>
-          <Button width="8rem" onClick={() => setState(false)}>
+          <Button color='primary' width="8rem" onClick={() => setState(false)}>
             Cancelar
           </Button>
 

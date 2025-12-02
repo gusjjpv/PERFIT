@@ -6,6 +6,7 @@ interface ButtonProps {
   font?: string,
   width?: string,
   color?: 'primary' | 'secondary',
+  padding?: number,
   gradient?: boolean,
   type?: 'submit' | 'button'
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -15,7 +16,8 @@ interface ButtonStyles {
   $font?: string,
   $width?: string,
   $color?: 'primary' | 'secondary',
-  $gradient?: boolean
+  $gradient?: boolean,
+  $padding?: number
 }
 
 const ButtonContainer = styled.button<ButtonStyles>`
@@ -33,13 +35,13 @@ const ButtonContainer = styled.button<ButtonStyles>`
   background-image: ${({ $gradient }) => $gradient ? 'linear-gradient(to right, #1E90FF, #32CD32)' : 'none'};
   border: 1px solid #00000047;
   border-radius: 4px;
-  padding: .5rem;
+  padding: ${({ $padding }) => $padding ? `${$padding}rem` : '.5rem'};
   cursor: pointer;
 `
 
-export default function Button({ children, font, width, color, type, onClick, gradient }: ButtonProps) {
+export default function Button({ children, font, width, color, padding, type, onClick, gradient }: ButtonProps) {
   return (
-    <ButtonContainer type={type} onClick={onClick} $font={font} $width={width} $color={color} $gradient={gradient}>
+    <ButtonContainer type={type} onClick={onClick} $font={font} $width={width} $color={color} $gradient={gradient} $padding={padding}>
       {children}
     </ButtonContainer>
   )
