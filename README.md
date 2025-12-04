@@ -6,7 +6,7 @@
 ---
 ## 🎯 Objetivo do Sistema
 
-O **PERFIT** tem como objetivo modernizar e centralizar a gestão dos alunos. O sistema visa facilitar a rotina de professores e personal trainers, permitindo uma visualização rápida e detalhada do perfil de cada aluno, automatizando cálculos fisiológicos e fornecendo ferramentas digitais para prescrição de treinos e monitoramento de saúde.
+O sistema visa facilitar a rotina de professores e personal trainers, permitindo uma visualização rápida e detalhada do perfil de cada aluno, automatizando cálculos fisiológicos e fornecendo ferramentas digitais para prescrição de treinos e monitoramento de saúde.
 
 ## 🚀 Principais Funcionalidades
 
