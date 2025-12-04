@@ -2,6 +2,7 @@
   <img src="./PERFIT/client/public/logo.png" alt="PERFIT Logo" width="200"/>
   <p><strong>Sistema de Gestão para Academias e Personal Trainers</strong><p>
 </div>
+
 ---
 ## 🎯 Objetivo do Sistema
 
