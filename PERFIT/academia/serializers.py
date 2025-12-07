@@ -224,3 +224,31 @@ class AvaliacaoPaAgrupadaSerializer(serializers.Serializer):
     antes = serializers.DictField(required=False, allow_null=True)
     durante = serializers.DictField(required=False, allow_null=True)
     depois = serializers.DictField(required=False, allow_null=True)
+
+
+class AvaliacaoPaDadosSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AvaliacaoPa
+        fields = ['paSistolica', 'paDiastolica', 'glicemia']
+
+
+class AvaliacaoPaMultiplaSerializer(serializers.Serializer):
+    
+    antes = AvaliacaoPaDadosSerializer(required=False, allow_null=True)
+    durante = AvaliacaoPaDadosSerializer(required=False, allow_null=True)
+    depois = AvaliacaoPaDadosSerializer(required=False, allow_null=True)
+    
+    def create(self, validated_data):
+        aluno_id = self.context.get('aluno_id')
+        avaliacoes_criadas = []
+        
+        for momento in ['antes', 'durante', 'depois']:
+            dados = validated_data.get(momento)
+            if dados:
+                dados['momento'] = momento.upper()
+                dados['aluno_id'] = aluno_id
+                avaliacao = AvaliacaoPa.objects.create(**dados)
+                avaliacoes_criadas.append(avaliacao)
+        
+        return avaliacoes_criadas
+        return avaliacoes_criadas

@@ -10,7 +10,7 @@ from .permissions import IsProfessor
 from .serializers import MyTokenObtainPairSerializer
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 from .models import Professor, Aluno, FichaTreino, FichaDeDados, AvaliacaoFisica, AvaliacaoPa
-from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, AlunoDetailSerializer, FichaTreinoSerializer, FichaDeDadosSerializer, AvaliacaoFisicaSerializer, AvaliacaoPaSerializer)
+from .serializers import (ProfessorSerializer, ProfessorCreateSerializer, AlunoSerializer, AlunoCreateSerializer, AlunoDetailSerializer, FichaTreinoSerializer, FichaDeDadosSerializer, AvaliacaoFisicaSerializer, AvaliacaoPaSerializer, AvaliacaoPaMultiplaSerializer)
 
 class ProfessoresAPIView(generics.ListCreateAPIView):
     queryset = Professor.objects.all()
@@ -400,6 +400,7 @@ class AvaliacaoPaListCreateAPIView(generics.ListCreateAPIView):
                 'data': avaliacao.data
             }
         
+        resultado = []
         for data, momentos in sorted(agrupadas.items(), reverse=True):
             resultado.append({
                 'data': datetime.combine(data, datetime.min.time()),
@@ -420,3 +421,25 @@ class AvaliacaoPaListCreateAPIView(generics.ListCreateAPIView):
              raise PermissionDenied("Você não pode registrar dados para este aluno.")
 
         serializer.save(aluno_id=aluno_id)
+
+
+class AvaliacaoPaMultiplaCreateView(generics.CreateAPIView):
+    """Endpoint para criar múltiplas avaliações de PA de uma vez (antes, durante, depois)"""
+    serializer_class = AvaliacaoPaMultiplaSerializer
+    permission_classes = [IsAuthenticated, IsProfessor]
+    
+    def create(self, request, *args, **kwargs):
+        aluno_id = self.kwargs['pk']
+        aluno = get_object_or_404(Aluno, pk=aluno_id)
+        
+        if not request.user.is_superuser and aluno.professor.user != request.user:
+            raise PermissionDenied("Você não pode registrar dados para este aluno.")
+        
+        serializer = self.get_serializer(data=request.data, context={'aluno_id': aluno_id})
+        serializer.is_valid(raise_exception=True)
+        avaliacoes = serializer.save()
+        
+        # Retorna as avaliações criadas
+        from academia.serializers import AvaliacaoPaSerializer
+        output_serializer = AvaliacaoPaSerializer(avaliacoes, many=True)
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
