@@ -378,6 +378,39 @@ class AvaliacaoPaListCreateAPIView(generics.ListCreateAPIView):
     def get_queryset(self):
         aluno_id = self.kwargs['pk']
         return AvaliacaoPa.objects.filter(aluno_id=aluno_id)
+    
+    def list(self, request, *args, **kwargs):
+        from collections import defaultdict
+        from datetime import datetime
+        
+        queryset = self.get_queryset()
+        
+        agrupadas = defaultdict(lambda: {'antes': None, 'durante': None, 'depois': None})
+        
+        for avaliacao in queryset:
+            data_key = avaliacao.data.date()
+            momento_key = avaliacao.momento.lower()
+            
+            agrupadas[data_key][momento_key] = {
+                'id': avaliacao.id,
+                'paSistolica': avaliacao.paSistolica,
+                'paDiastolica': avaliacao.paDiastolica,
+                'glicemia': avaliacao.glicemia,
+                'momento': avaliacao.momento,
+                'data': avaliacao.data
+            }
+        
+        for data, momentos in sorted(agrupadas.items(), reverse=True):
+            resultado.append({
+                'data': datetime.combine(data, datetime.min.time()),
+                'antes': momentos['antes'],
+                'durante': momentos['durante'],
+                'depois': momentos['depois']
+            })
+        
+        from academia.serializers import AvaliacaoPaAgrupadaSerializer
+        serializer = AvaliacaoPaAgrupadaSerializer(resultado, many=True)
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         aluno_id = self.kwargs['pk']

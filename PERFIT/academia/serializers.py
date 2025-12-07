@@ -218,3 +218,9 @@ class AvaliacaoPaSerializer(serializers.ModelSerializer):
     class Meta:
         model = AvaliacaoPa
         exclude = ['aluno']
+
+class AvaliacaoPaAgrupadaSerializer(serializers.Serializer):
+    data = serializers.DateTimeField()
+    antes = serializers.DictField(required=False, allow_null=True)
+    durante = serializers.DictField(required=False, allow_null=True)
+    depois = serializers.DictField(required=False, allow_null=True)
