@@ -38,6 +38,50 @@ O sistema visa facilitar a rotina de professores e personal trainers, permitindo
 - **Estilização:** Styled Components
 - **PWA:** Vite Plugin PWA
 
+Arquitetura do Sistema
+
+Abaixo, o diagrama de componentes e fluxo de dados da infraestrutura do PERFIT na AWS:
+```mermaid
+---
+config:
+  layout: fixed
+---
+flowchart TB
+ subgraph subGraph0["AWS Cloud - Frontend"]
+        Amplify[("AWS Amplify<br>(React App / Client)")]
+  end
+ subgraph subGraph1["Docker Compose"]
+        Nginx["Nginx<br>(Reverse Proxy &amp; SSL)"]
+        Certbot@{ label: "Certbot<br>(Let's Encrypt)" }
+        Django["Django REST Framework<br>(Gunicorn Server)"]
+        Postgres[("PostgreSQL<br>(Database)")]
+  end
+ subgraph subGraph2["AWS Cloud - Backend (EC2 Instance)"]
+        subGraph1
+        StaticVol[("Static Volume")]
+        DbVol[("Postgres Data")]
+  end
+    User(("Usuário<br>Prof/Aluno")) -- Acessa via Browser --> Amplify
+    Amplify -- "Requisições API - HTTPS" --> Route53{{"AWS Route 53<br>(DNS / Domínio)"}}
+    Route53 L_Route53_Nginx_0@-- Resolve IP --> Nginx
+    Nginx -- "Proxy Pass - HTTP" --> Django
+    Django <-- SQL Queries --> Postgres
+    Nginx <-- Lê Certificados --> Certbot
+    Nginx <-- Serve CSS/JS --> StaticVol
+    Django -- Coleta Estáticos --> StaticVol
+    Postgres <-- Persistência --> DbVol
+
+    Certbot@{ shape: rounded}
+    style Amplify fill:#ff9900,stroke:#333,color:black
+    style Nginx fill:#009639,stroke:#333,color:white
+    style Certbot fill:#f2c744,stroke:#333,color:black
+    style Django fill:#092e20,stroke:#333,color:white
+    style Postgres fill:#336791,stroke:#333,color:white
+    style User fill:#2962FF,stroke:#333,stroke-width:2px,color:none
+    style Route53 fill:#ff9900,stroke:#333,color:black
+
+    L_Route53_Nginx_0@{ curve: natural }
+```
 ## 🏃‍♂️ Como Executar o Projeto
 
 ### Pré-requisitos
@@ -83,7 +127,7 @@ npm run dev
 
 | Nome | Função |
 |------|--------|
-| **FABIO QUEIROZ VIEIRA** | Desenvolvedor |
-| **GUSTAVO KESLEY DE FONTES NUNES** | Desenvolvedor |
-| **JOÃO GUSTAVO SOUZA LIMA** | Desenvolvedor |
-| **JOHAN PEDRO DE QUEIROZ** | Desenvolvedor |
+| **FABIO QUEIROZ VIEIRA** |Data Modeler, Database Designer, Data Architect, Systems Analyst|
+| **GUSTAVO KESLEY DE FONTES NUNES** | Scrum Master |
+| **JOÃO GUSTAVO SOUZA LIMA** | Product owner, Back-end Developer, Cloud Developer |
+| **JOHAN PEDRO DE QUEIROZ** | Front-end Developer|
