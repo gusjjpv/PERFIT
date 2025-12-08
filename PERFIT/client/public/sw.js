@@ -41,25 +41,23 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Clone a resposta antes de cachear
         const responseToCache = response.clone();
-        
+
         caches.open(CACHE_NAME)
           .then((cache) => {
-            cache.put(event.request, responseToCache);
+            // Apenas GET pode ir para o cache
+            if (event.request.method === 'GET') {
+              cache.put(event.request, responseToCache);
+            }
           });
-        
+
         return response;
       })
       .catch(() => {
-        // Se a rede falhar, tenta buscar do cache
         return caches.match(event.request)
           .then((response) => {
-            if (response) {
-              return response;
-            }
-            
-            // Se não está no cache e é uma navegação, retorna a página principal
+            if (response) return response;
+
             if (event.request.mode === 'navigate') {
               return caches.match('/index.html');
             }

@@ -194,10 +194,13 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
         //console.log(id)
 
         if(data) {
+
+          if(setGoal && !isEdit) { 
+            setGoal(data.objetivo)
+          }
           
           setWeight(data.peso)
           setHeight(data.altura)
-          if(setGoal) setGoal(data.objetivo)
           setBmi(data.imc)
           setAge(data.idade)
           setDate(data.data_nascimento)
