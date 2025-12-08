@@ -15,7 +15,6 @@ O sistema visa facilitar a rotina de professores e personal trainers, permitindo
 - **Automação de Avaliações:** Cálculo automático do IMC e registro de circunferências corporais.
 - **Monitoramento de Saúde:** Registro e acompanhamento de Pressão Arterial (PA) e Controle Glicêmico (CC), com relatórios detalhados (pré, durante e pós-treino).
 - **Fichas de Treino Digitais:** Ferramenta intuitiva para criação e atribuição de fichas de treino personalizadas.
-- **Engajamento:** Módulo de "Desafios" para motivar os alunos e aumentar a retenção.
 
 ### 🏋️‍♂️ Para o Aluno
 - **Interface Amigável:** Design intuitivo, acessível e com alta legibilidade.
