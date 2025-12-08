@@ -1,86 +1,89 @@
-# PERFIT
-Sistema para personal trainer
+<div align="center">
+  <img src="./PERFIT/client/public/logo.png" alt="PERFIT Logo" width="200"/>
+  <p><strong>Sistema de Gestão para Academias e Personal Trainers</strong><p>
+</div>
+
+---
+## 🎯 Objetivo do Sistema
+
+O sistema visa facilitar a rotina de professores e personal trainers, permitindo uma visualização rápida e detalhada do perfil de cada aluno, automatizando cálculos fisiológicos e fornecendo ferramentas digitais para prescrição de treinos e monitoramento de saúde.
+
+## 🚀 Principais Funcionalidades
+
+### 👨‍🏫 Para o Professor
+- **Gestão Centralizada:** Visualização rápida do perfil e dados completos de cada aluno.
+- **Automação de Avaliações:** Cálculo automático do IMC e registro de circunferências corporais.
+- **Monitoramento de Saúde:** Registro e acompanhamento de Pressão Arterial (PA) e Controle Glicêmico (CC), com relatórios detalhados (pré, durante e pós-treino).
+- **Fichas de Treino Digitais:** Ferramenta intuitiva para criação e atribuição de fichas de treino personalizadas.
+- **Engajamento:** Módulo de "Desafios" para motivar os alunos e aumentar a retenção.
+
+### 🏋️‍♂️ Para o Aluno
+- **Interface Amigável:** Design intuitivo, acessível e com alta legibilidade.
+- **Acesso Rápido:** Visualização clara e direta da ficha de treino do dia.
+
+## 🛠️ Tecnologias Utilizadas
+
+### Backend
+- **Linguagem:** Python
+- **Framework:** Django & Django REST Framework (DRF)
+- **Banco de Dados:** PostgreSQL
+- **Infraestrutura:** Docker & Docker Compose
+- **Servidor Web:** Nginx & Gunicorn
+- **Documentação:** Swagger / OpenAPI (drf-spectacular)
+
+### Frontend
+- **Linguagem:** TypeScript
+- **Framework:** React
+- **Build Tool:** Vite
+- **Estilização:** Styled Components
+- **PWA:** Vite Plugin PWA
+
+## 🏃‍♂️ Como Executar o Projeto
 
 ### Pré-requisitos
+- [Docker](https://www.docker.com/) e Docker Compose instalados.
+- [Node.js](https://nodejs.org/) (versão 18 ou superior) e npm instalados.
 
-Antes de começar, certifique-se de ter instalado:
+### 1. Backend (API & Banco de Dados)
 
-## 1. Docker & Docker Compose:
-
-- Windows/Mac: Instale o Docker Desktop.
-- Linux: Instale o `docker` e o plugin `docker-compose-plugin`.
-
-## 2. Git: Para clonar o repositório.
-
-```shell
-git clone https://github.com/gusjjpv/PERFIT.git
-```
-
-## 3. Instalar o requeriments
-crie o ambiente virtual
+O backend é totalmente containerizado. Para iniciar:
 
 ```bash
-pip install -r requirements.txt
+# Na raiz do projeto
+docker-compose up --build
 ```
 
-## 4. Suba o Projeto
+Isso iniciará:
+- Banco de dados PostgreSQL
+- API Django (porta 8000)
+- Nginx (porta 80)
 
-Na raiz do projeto (onde está o arquivo docker-compose.yml), rode:
-```shell
-# Sobe os containers e mostra os logs no terminal
-sudo docker compose up --build
-```
+### 2. Frontend (Aplicação Web)
 
-## 5. Configurando o Banco de Dados (Essencial)
+Em um novo terminal, execute o cliente React:
 
-Com o container rodando (deixe o terminal anterior aberto e abra um novo), execute:
-
-#### 1. Criar as Tabelas (Migrate)
-```shell
-sudo docker compose exec web python manage.py migrate
-```
-
-#### 2. Criar um Usuário Admin (Superuser)
-```shell
-sudo docker compose exec web python manage.py createsuperuser
-```
-
-Siga as instruções para criar seu login e senha.
-
-### Coletar Arquivos Estáticos (CSS do Admin)
-
-Para que o painel admin fique bonito (o Nginx precisa achar o CSS):
-
-```shell
-sudo docker compose exec web python manage.py collectstatic --no-input
-```
-
-Pronto! Acesse http://localhost/admin e faça login
-
-## Cheatsheet
-
-**Subir o servidor**
 ```bash
-docker compose up
+# Navegue até a pasta do cliente
+cd PERFIT/client
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
 ```
 
-**Subir e buildar**
-```bash
-docker compose up --build
-```
+## 🧭 Como Navegar e Testar
 
-**Parar o servidor**
-```bash
-sudo docker compose down
-```
+- **Aplicação Web:** Acesse o link exibido no terminal do frontend (geralmente `http://localhost:5173`).
+- **Documentação da API (Swagger):** Com o backend rodando, acesse `http://localhost:8000/api/docs/` para visualizar e testar os endpoints da API.
+- **Painel Administrativo:** Acesse `http://localhost:8000/admin/` para gerenciar usuários e dados diretamente (requer criação de superusuário).
 
-**Rodar Migrations**
-```bash
-docker compose exec web python manage.py makemigrations
-docker compose exec web python manage.py migrate
-```
+## 👥 Integrantes do Grupo
 
-**criar o super user**
-```bash
-sudo docker compose exec web python manage.py createsuperuser
-```
+| Nome | Função |
+|------|--------|
+| **FABIO QUEIROZ VIEIRA** | Desenvolvedor |
+| **GUSTAVO KESLEY DE FONTES NUNES** | Desenvolvedor |
+| **JOÃO GUSTAVO SOUZA LIMA** | Desenvolvedor |
+| **JOHAN PEDRO DE QUEIROZ** | Desenvolvedor |
