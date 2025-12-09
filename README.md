@@ -60,7 +60,7 @@ flowchart TB
         StaticVol[("Static Volume")]
         DbVol[("Postgres Data")]
   end
-    User(("Usuário<br>Prof/Aluno")) -- Acessa via Browser --> Amplify
+    User(("Usuário<br>Prof/Aluno")) -- Acessa via app --> Amplify
     Amplify -- "Requisições API - HTTPS" --> Route53{{"AWS Route 53<br>(DNS / Domínio)"}}
     Route53 L_Route53_Nginx_0@-- Resolve IP --> Nginx
     Nginx -- "Proxy Pass - HTTP" --> Django
