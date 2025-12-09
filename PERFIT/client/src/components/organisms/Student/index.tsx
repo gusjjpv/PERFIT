@@ -17,6 +17,8 @@ import { Logout } from "../../../auth/auth";
 import { Container } from "../../../styles/styles";
 import { OverlayContext } from "../../../context/OverlayContext";
 import ConfirmModal from "../../molecules/ConfirmModal";
+import MonitorHealth from "../../molecules/MonitorHealth";
+import GenericPhoto from "/generic-photo.png";
 
 interface StudentProps {
   weight: number, 
@@ -57,7 +59,8 @@ const Avatar = styled.div`
   width: 80px; 
   height: 80px; 
   border-radius: 50%; 
-  background-color: #ff0000; 
+  background-image: url(${GenericPhoto});
+  background-size: contain;
   flex-shrink: 0;
 `;
 
@@ -137,6 +140,8 @@ export default function Student() {
   const [ name, setName ] = useState<string>('')
   const [ desactiveStudent, setDesactiveStudent ] = useState<boolean>(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [reloadStudentInfo, setReloadStudentInfo] = useState(false); 
+
   
   const { id } = useParams<string>();
   const navigate = useNavigate();
@@ -206,7 +211,7 @@ export default function Student() {
           const data = await response.json();
           setStudent(data);
           setName(data.user.first_name);
-          console.log("DATA REAL: ", data)
+          //console.log("DATA REAL: ", data)
         } else {
           console.error("Falha ao buscar dados do aluno.");
         }
@@ -286,7 +291,7 @@ export default function Student() {
   };
 
   const deleteStudent = async () => {
-    const accessToken = getAccessTokenInLocalStorage();
+    const accessToken = getAccessTokenInLocalStorage()
     
     try {
       const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/${id}/`, {
@@ -311,7 +316,7 @@ export default function Student() {
   }
 
   const handleDesactiveStudent = async () => {
-    const accessToken = getAccessTokenInLocalStorage();
+    const accessToken = getAccessTokenInLocalStorage()
     
     try {
       const response = await fetch(`https://api.joaogustavo.grupo-03.sd.ufersa.dev.br/api/v1/alunos/${id}/`, {
@@ -371,7 +376,7 @@ export default function Student() {
                           type="text"
                           placeholder="Nome do aluno"
                           value={name}
-                          padding="0.5rem 0.5rem 3rem .5rem"
+                          padding="1rem 0.5rem 3rem .5rem"
                           onChange={(e) => setName(e.target.value)} minLength={3} maxLength={20} required={false}                      />
                     ) : (
                       <h2>{name}</h2>
@@ -406,10 +411,11 @@ export default function Student() {
                   <IconWrapper $chosenSection={chosenSection === 'info'} onClick={() => handleSection('info')}>
                     <FaInfoCircle />
                   </IconWrapper>
-
-                  <IconWrapper $chosenSection={chosenSection === 'a.v.'} onClick={() => handleSection('a.v.')}>
-                    <FaClipboardList /> 
-                  </IconWrapper>
+                  {user?.role === 'professor' && (
+                    <IconWrapper $chosenSection={chosenSection === 'a.v.'} onClick={() => handleSection('a.v.')}>
+                      <FaClipboardList /> 
+                    </IconWrapper>
+                  )}
 
                   <ConfigContainer>
                     <IconWrapper $chosenSection={chosenSection === 'config'} onClick={() => handleSection('config')}>
@@ -430,11 +436,13 @@ export default function Student() {
                 patchUser={patchStudent}
                 updateUser={updateUser}
                 getInfo={getInfo}
+                reloadStudentInfo={reloadStudentInfo}
+                setReloadStudentInfo={setReloadStudentInfo}
               />
             )}
 
-            {chosenSection === 'a.v.' && (
-              <WarmingSoon>Em breve...</WarmingSoon>
+            {user?.role === 'professor' && chosenSection === 'a.v.' && (
+              <MonitorHealth isEdit={isEdit} />
             )}
 
             {chosenSection === 'config' && (
