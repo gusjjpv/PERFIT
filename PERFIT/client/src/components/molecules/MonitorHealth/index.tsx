@@ -62,8 +62,8 @@ const ToggleHeader = styled.div`
     cursor: pointer;
 `
 const ContainerScroll = styled.div`
-    max-height: 200px;
-    overflow-y: auto;
+    /* max-height: 200px;
+    overflow-y: auto; */
     padding-right: .3rem;
     margin-top: 1rem;
 `
@@ -229,32 +229,45 @@ export default function MonitorHealth({ isEdit }: MonitorHealthProps) {
                     return
                 }
 
-                const data = await response.json()
+                const data: any[] = await response.json() // Tipagem como array de 'any'
                 //console.log("DATA GET:", data)
 
-                
-                const formatted = data.map((item: any, index: number) => ({
-                    id: index + 1,                 
-                    date: item.data.split("T")[0],
-                    antes: {
-                        paSistolica: item.antes.paSistolica,
-                        paDiastolica: item.antes.paDiastolica,
-                        glicemia: item.antes.glicemia,
-                    },
-                    durante: {
-                        paSistolica: item.durante.paSistolica,
-                        paDiastolica: item.durante.paDiastolica,
-                        glicemia: item.durante.glicemia,
-                    },
-                    depois: {
-                        paSistolica: item.depois.paSistolica,
-                        paDiastolica: item.depois.paDiastolica,
-                        glicemia: item.depois.glicemia,
-                    },
-                    expanded: false
+                // 1. Agrupar os registros por data
+                const groupedByDate = data.reduce((acc, currentItem) => {
+                    // Extrai a data sem o timestamp
+                    const dateKey = currentItem.data.split("T")[0]
+
+                    // Inicializa o registro do dia se ainda não existir
+                    if (!acc[dateKey]) {
+                        acc[dateKey] = {
+                            date: dateKey,
+                            antes: { paSistolica: null, paDiastolica: null, glicemia: null },
+                            durante: { paSistolica: null, paDiastolica: null, glicemia: null },
+                            depois: { paSistolica: null, paDiastolica: null, glicemia: null },
+                        }
+                    }
+
+                    // Preenche o momento (ANTES, DURANTE, DEPOIS) com os dados
+                    const momento = currentItem.momento.toLowerCase() // "antes", "durante", "depois"
+                    
+                    if (acc[dateKey][momento]) {
+                        acc[dateKey][momento].paSistolica = currentItem.paSistolica
+                        acc[dateKey][momento].paDiastolica = currentItem.paDiastolica
+                        acc[dateKey][momento].glicemia = currentItem.glicemia
+                    }
+
+
+                    return acc
+                }, {} as { [key: string]: Omit<DayRecord, 'id' | 'expanded'> })
+
+                // 2. Mapear o objeto agrupado para a lista de DayRecord
+                const formattedRecords: DayRecord[] = Object.values(groupedByDate).map((dayRecord, index) => ({
+                    id: index + 1, // Adiciona um ID sequencial para o React
+                    ...dayRecord,
+                    expanded: false, // Define o estado inicial de expansão
                 }))
 
-                setRecords(formatted)
+                setRecords(formattedRecords.reverse()) // Inverte a ordem para mostrar o mais recente primeiro, se desejar
 
             } catch (err) {
                 console.log("Internal Error: ", err)
@@ -340,7 +353,7 @@ export default function MonitorHealth({ isEdit }: MonitorHealthProps) {
                         <ModalTitle>Novo Registro - {today}</ModalTitle>
 
                         <CloseModal onClick={() => setShowModal(false)}>
-                            <Button>X</Button>
+                            <Button color='primary'>X</Button>
                         </CloseModal>
 
                         {moments.map(m => (
