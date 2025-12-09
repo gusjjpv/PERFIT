@@ -140,6 +140,8 @@ export default function Student() {
   const [ name, setName ] = useState<string>('')
   const [ desactiveStudent, setDesactiveStudent ] = useState<boolean>(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [reloadStudentInfo, setReloadStudentInfo] = useState(false); 
+
   
   const { id } = useParams<string>();
   const navigate = useNavigate();
@@ -374,7 +376,7 @@ export default function Student() {
                           type="text"
                           placeholder="Nome do aluno"
                           value={name}
-                          padding="0.5rem 0.5rem 3rem .5rem"
+                          padding="1rem 0.5rem 3rem .5rem"
                           onChange={(e) => setName(e.target.value)} minLength={3} maxLength={20} required={false}                      />
                     ) : (
                       <h2>{name}</h2>
@@ -434,6 +436,8 @@ export default function Student() {
                 patchUser={patchStudent}
                 updateUser={updateUser}
                 getInfo={getInfo}
+                reloadStudentInfo={reloadStudentInfo}
+                setReloadStudentInfo={setReloadStudentInfo}
               />
             )}
 

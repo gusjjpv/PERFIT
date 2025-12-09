@@ -28,7 +28,7 @@ interface StudentInfoProps {
   setIsEdit?: Dispatch<SetStateAction<boolean>>,
   disabled?: boolean,
   patchUser?: (data: StudentProps) => Promise<void>,
-  updateUser?: () => Promise<void>
+  updateUser?: () => Promise<void>,
   getInfo?: () => Promise<{
     peso: number;
     altura: number;
@@ -39,6 +39,8 @@ interface StudentInfoProps {
     profissao: string;
     problema_saude: string;
   }>
+  reloadStudentInfo?: boolean,
+  setReloadStudentInfo?: Dispatch<SetStateAction<boolean>>
 }
 
 const FadeIn = styled.div`
@@ -138,7 +140,7 @@ const ContainerBtns = styled.div`
   top: 50px;
 `
 
-export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled, patchUser, updateUser, getInfo } : StudentInfoProps) {
+export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled, patchUser, updateUser, getInfo, reloadStudentInfo, setReloadStudentInfo } : StudentInfoProps) {
   const [ age, setAge ] = useState<number>(0)
   const [ date, setDate ] = useState<string>('')
   const [ profession, setProfession ] = useState<string>('')
@@ -165,6 +167,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
     try {
       if(patchUser) await patchUser(studentData)
       if(setIsEdit) setIsEdit(false) 
+      if(setReloadStudentInfo) setReloadStudentInfo(prev => !prev)
     } catch (error) {
         console.error("Erro ao salvar dados", error);
     }
@@ -188,6 +191,8 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
 
   useEffect(() => {
     const catchInfo = async () => {
+      // Se estiver em modo de edição, NÃO CARREGUE, para não apagar o que o usuário digita.
+      if(isEdit) return
       if(getInfo) {
         const data = await getInfo()
         //console.log("INFO:", data)
@@ -211,7 +216,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
     }
 
     catchInfo()
-  }, [getInfo, id, setGoal])
+  }, [getInfo, id, setGoal, reloadStudentInfo, isEdit])
 
   return (
     <FadeIn>
@@ -245,7 +250,7 @@ export default function StudentInfo({ goal, setGoal, isEdit, setIsEdit, disabled
             <h3>Altura</h3>
             </MeajureText>
             {isEdit ? (
-              <Input id="6" type="number" placeholder="1.70cm" width={25} padding=".5rem 0rem 0.3rem .2rem" minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setHeight(Number(e.target.value))} />
+              <Input id="6" type="number" placeholder="1.70cm" width={30} padding=".5rem 0rem 0.3rem .2rem" minLength={undefined} maxLength={undefined} required={false} onChange={(e) => setHeight(Number(e.target.value))} />
             ) : (
               <ValueText>{height} cm</ValueText>
             )}
